@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useChronoStore } from "../store";
 import {
   RotateCcw, 
@@ -8,7 +8,9 @@ import {
   Pause, 
   ArrowRight, 
   Zap, 
-  Layers
+  Layers,
+  Menu,
+  X
 } from "lucide-react";
 
 export const Header: React.FC = () => {
@@ -24,6 +26,8 @@ export const Header: React.FC = () => {
     setLandingPage
   } = useChronoStore();
 
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   const toggleRun = () => {
     if (simulatorState === "running") {
       pause();
@@ -33,7 +37,7 @@ export const Header: React.FC = () => {
   };
 
   return (
-    <header className="flex items-center px-4 w-full h-header-height bg-surface-container border-b border-outline-variant z-50 fixed top-0 left-0">
+    <header className="flex items-center justify-between px-4 w-full h-header-height bg-surface-container border-b border-outline-variant z-50 fixed top-0 left-0">
       <div className="flex items-center gap-8 w-1/3">
         <div 
           className="flex items-center gap-2 cursor-pointer select-none group"
@@ -47,34 +51,45 @@ export const Header: React.FC = () => {
       </div>
 
       {isLandingPage ? (
-        <nav className="flex-grow flex justify-center items-center gap-8">
-          <a 
-            href="#features" 
-            className="font-nav-item text-nav-item text-on-surface-variant hover:text-primary-container transition-colors duration-200 tracking-wide font-medium relative py-1 after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-primary-container hover:after:w-full after:transition-all after:duration-300"
-          >
-            Features
-          </a>
-          <a 
-            href="#guide" 
-            className="font-nav-item text-nav-item text-on-surface-variant hover:text-primary-container transition-colors duration-200 tracking-wide font-medium relative py-1 after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-primary-container hover:after:w-full after:transition-all after:duration-300"
-          >
-            How It Works
-          </a>
-          <a 
-            href="#specs" 
-            className="font-nav-item text-nav-item text-on-surface-variant hover:text-primary-container transition-colors duration-200 tracking-wide font-medium relative py-1 after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-primary-container hover:after:w-full after:transition-all after:duration-300"
-          >
-            ISA Specs
-          </a>
-          <a 
-            href="https://github.com/NoumanKhan/chronocore" 
-            target="_blank" 
-            rel="noreferrer" 
-            className="font-nav-item text-nav-item text-on-surface-variant hover:text-primary-container transition-colors duration-200 tracking-wide font-medium relative py-1 after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-primary-container hover:after:w-full after:transition-all after:duration-300"
-          >
-            GitHub
-          </a>
-        </nav>
+        <>
+          <nav className="flex-grow hidden md:flex justify-center items-center gap-8">
+            <a 
+              href="#features" 
+              className="font-nav-item text-nav-item text-on-surface-variant hover:text-primary-container transition-colors duration-200 tracking-wide font-medium relative py-1 after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-primary-container hover:after:w-full after:transition-all after:duration-300"
+            >
+              Features
+            </a>
+            <a 
+              href="#guide" 
+              className="font-nav-item text-nav-item text-on-surface-variant hover:text-primary-container transition-colors duration-200 tracking-wide font-medium relative py-1 after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-primary-container hover:after:w-full after:transition-all after:duration-300"
+            >
+              How It Works
+            </a>
+            <a 
+              href="#specs" 
+              className="font-nav-item text-nav-item text-on-surface-variant hover:text-primary-container transition-colors duration-200 tracking-wide font-medium relative py-1 after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-primary-container hover:after:w-full after:transition-all after:duration-300"
+            >
+              ISA Specs
+            </a>
+            <a 
+              href="https://github.com/NoumanKhan/chronocore" 
+              target="_blank" 
+              rel="noreferrer" 
+              className="font-nav-item text-nav-item text-on-surface-variant hover:text-primary-container transition-colors duration-200 tracking-wide font-medium relative py-1 after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-primary-container hover:after:w-full after:transition-all after:duration-300"
+            >
+              GitHub
+            </a>
+          </nav>
+          
+          {mobileMenuOpen && (
+            <div className="absolute top-header-height left-0 w-full bg-surface-container border-b border-outline-variant shadow-lg py-4 px-6 flex flex-col gap-4 md:hidden">
+              <a href="#features" onClick={() => setMobileMenuOpen(false)} className="text-on-surface font-medium hover:text-primary-container">Features</a>
+              <a href="#guide" onClick={() => setMobileMenuOpen(false)} className="text-on-surface font-medium hover:text-primary-container">How It Works</a>
+              <a href="#specs" onClick={() => setMobileMenuOpen(false)} className="text-on-surface font-medium hover:text-primary-container">ISA Specs</a>
+              <a href="https://github.com/NoumanKhan/chronocore" target="_blank" rel="noreferrer" onClick={() => setMobileMenuOpen(false)} className="text-on-surface font-medium hover:text-primary-container">GitHub</a>
+            </div>
+          )}
+        </>
       ) : (
         <div className="flex-1 flex justify-center items-center">
           <div className="flex items-center gap-1 bg-surface-container-lowest/50 rounded-lg p-0.5 border border-outline-variant/30">
@@ -130,6 +145,16 @@ export const Header: React.FC = () => {
       )}
 
       <div className="w-1/3 flex justify-end items-center gap-4">
+        {isLandingPage && (
+          <div className="md:hidden">
+            <button 
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="text-on-surface-variant hover:text-primary-container p-2"
+            >
+              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
+        )}
         {!isLandingPage && (
           <button 
             onClick={compileAndLoad}
@@ -144,7 +169,7 @@ export const Header: React.FC = () => {
         {isLandingPage && (
           <button 
             onClick={() => setLandingPage(false)}
-            className="bg-primary-container text-terminal-black font-nav-item text-nav-item px-5 py-2 rounded-full font-bold hover:bg-primary transition-all duration-300 hover:scale-[1.05] active:scale-[0.98] glow-hover shadow-[0_0_15px_rgba(0,229,255,0.4)]"
+            className="hidden sm:block bg-primary-container text-terminal-black font-nav-item text-nav-item px-5 py-2 rounded-full font-bold hover:bg-primary transition-all duration-300 hover:scale-[1.05] active:scale-[0.98] glow-hover shadow-[0_0_15px_rgba(0,229,255,0.4)]"
           >
             Launch Simulator
           </button>

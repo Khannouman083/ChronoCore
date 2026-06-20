@@ -115,8 +115,8 @@ export const MemoryTab: React.FC = () => {
     }
 
     return (
-      <div className="border border-outline-variant/30 rounded-lg bg-surface-container-lowest overflow-hidden">
-        <table className="w-full text-left border-collapse font-data-hex text-[12px]">
+      <div className="border border-outline-variant/30 rounded-lg bg-surface-container-lowest overflow-x-auto custom-scrollbar">
+        <table className="w-full text-left border-collapse font-data-hex text-[12px] min-w-[600px]">
           <thead className="bg-surface-container-high text-on-surface-variant/70 select-none">
             <tr className="border-b border-outline-variant/20">
               <th className="py-2 px-4 border-r border-outline-variant/20 w-32">Address</th>

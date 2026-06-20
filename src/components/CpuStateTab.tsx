@@ -29,9 +29,9 @@ export const CpuStateTab: React.FC = () => {
   };
 
   return (
-    <div className="flex-1 flex flex-col lg:flex-row gap-panel-gap bg-secondary-container lg:h-full h-auto lg:overflow-hidden overflow-y-auto p-3">
+    <div className="flex-1 flex flex-row gap-4 lg:gap-6 bg-secondary-container lg:h-full h-auto lg:overflow-hidden overflow-x-auto p-3">
       {/* Left panel: Register Grid */}
-      <section className="flex-[3] bg-surface p-4 flex flex-col gap-4 overflow-hidden border border-outline-variant/30 rounded-xl">
+      <section className="flex-[3] min-w-[300px] lg:min-w-0 bg-surface p-4 flex flex-col gap-4 overflow-hidden border border-outline-variant/30 rounded-xl">
         <div className="flex justify-between items-end border-b border-outline-variant/30 pb-2 select-none">
           <div className="flex items-center gap-2">
             <span className="w-2 h-4 bg-primary-container rounded-sm"></span>
@@ -41,12 +41,9 @@ export const CpuStateTab: React.FC = () => {
         </div>
 
         {/* 
-          minmax(140px, 1fr): 140px guarantees "0x00000000" (10 monospace chars × ~12px + 16px padding)
-          always fits on one line without clipping. 
+          grid-cols-11 on mobile, grid-cols-4 on desktop 
         */}
-        <div className="grid gap-2 flex-grow overflow-y-auto custom-scrollbar pr-1"
-          style={{ gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))" }}
-        >
+        <div className="grid grid-cols-[repeat(11,minmax(120px,1fr))] lg:grid-cols-4 gap-2 flex-grow overflow-x-auto lg:overflow-y-auto lg:overflow-x-hidden custom-scrollbar pr-1 pb-2">
           {registers.map((value, idx) => {
             const isUpdated = updatedRegisters.has(idx);
             const alias = REGISTER_NAMES[idx];
@@ -54,7 +51,7 @@ export const CpuStateTab: React.FC = () => {
             return (
               <div 
                 key={`${idx}-${value}`}
-                className={`border rounded px-3 py-2 flex flex-col gap-1 hover:border-primary-container/60 transition-colors cursor-default relative bg-surface-container-lowest/20 ${
+                className={`border rounded px-3 py-2 flex flex-col gap-1 hover:border-primary-container/60 transition-colors cursor-default relative bg-surface-container-lowest/20 min-w-[120px] lg:min-w-0 ${
                   isUpdated ? "register-update border-success-green/40" : "border-outline-variant/40"
                 }`}
               >
@@ -87,7 +84,7 @@ export const CpuStateTab: React.FC = () => {
       </section>
 
       {/* Right panel: PC & Control Signals */}
-      <section className="flex-[2] flex flex-col gap-3 lg:overflow-hidden overflow-visible lg:h-full h-auto">
+      <section className="flex-[2] min-w-[280px] lg:min-w-0 flex flex-col gap-3 lg:overflow-hidden overflow-visible lg:h-full h-auto">
         {/* PC Module */}
         <div className="bg-surface-container-high p-4 flex flex-col gap-1.5 relative overflow-hidden border border-outline-variant/30 rounded-xl select-none">
           <div className="flex items-center justify-between">

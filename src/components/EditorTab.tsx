@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from "react";
 import MonacoEditor, { type Monaco } from "@monaco-editor/react";
 import { useChronoStore, baseSim } from "../store";
-import { X, CornerDownRight, Play } from "lucide-react";
+import { X, CornerDownRight, Play, Terminal } from "lucide-react";
 
 export const EditorTab: React.FC = () => {
   const {
@@ -12,13 +12,11 @@ export const EditorTab: React.FC = () => {
     breakpoints,
     toggleBreakpoint,
     pc,
-    simulatorState,
-    registers,
-    updatedRegisters
+    simulatorState
   } = useChronoStore();
 
-  const [activeBottomTab, setActiveBottomTab] = useState<"terminal" | "problems" | "watch">("terminal");
-  const [terminalHeight, setTerminalHeight] = useState(224);
+  const [activeBottomTab, setActiveBottomTab] = useState<"terminal" | "problems" | "log">("terminal");
+  const [terminalHeight, setTerminalHeight] = useState(0); // Closed by default
   const isDragging = useRef(false);
 
   const editorRef = useRef<any>(null);
@@ -247,8 +245,16 @@ export const EditorTab: React.FC = () => {
           <span className="text-[10px] text-on-surface-variant/40">RISC-V Assembly</span>
         </div>
         <div className="flex items-center gap-4 text-on-surface-variant font-status-label text-status-label">
-          <span>Tab Size: 4</span>
-          <span>UTF-8</span>
+          <button 
+            onClick={() => setTerminalHeight(h => h === 0 ? 224 : 0)}
+            className="flex items-center gap-1.5 transition-colors bg-primary-container/10 text-primary-container hover:bg-primary-container/20 px-2 py-1 rounded font-bold"
+            title="Toggle Bottom Panel"
+          >
+            <Terminal size={12} />
+            <span className="hidden sm:inline">Show Log</span>
+          </button>
+          <span className="hidden sm:inline">Tab Size: 4</span>
+          <span className="hidden sm:inline">UTF-8</span>
         </div>
       </div>
 
@@ -297,17 +303,17 @@ export const EditorTab: React.FC = () => {
             )}
           </button>
           <button 
-            onClick={() => setActiveBottomTab("watch")}
-            className={`font-status-label text-status-label h-full px-2 transition-colors ${activeBottomTab === "watch" ? "text-primary-container border-b-2 border-primary-container" : "text-on-surface-variant/60 hover:text-on-surface"}`}>
-            WATCH
+            onClick={() => setActiveBottomTab("log")}
+            className={`font-status-label text-status-label h-full px-2 transition-colors ${activeBottomTab === "log" ? "text-primary-container border-b-2 border-primary-container" : "text-on-surface-variant/60 hover:text-on-surface"}`}>
+            LOG
           </button>
           
           <button 
-            onClick={clearConsoleLogs}
+            onClick={() => setTerminalHeight(0)}
             className="ml-auto text-on-surface-variant/40 hover:text-on-surface transition-colors"
-            title="Clear Console"
+            title="Close Panel"
           >
-            <X size={14} />
+            <CornerDownRight size={14} className="rotate-90" />
           </button>
         </div>
 
@@ -352,49 +358,32 @@ export const EditorTab: React.FC = () => {
             </>
           )}
 
-          {activeBottomTab === "watch" && (() => {
-            const regABINames = [
-              "zero","ra","sp","gp","tp","t0","t1","t2",
-              "s0","s1","a0","a1","a2","a3","a4","a5",
-              "a6","a7","s2","s3","s4","s5","s6","s7",
-              "s8","s9","s10","s11","t3","t4","t5","t6"
-            ];
-            return (
-              <div className="flex flex-col gap-3 w-full">
-                {/* Metrics row */}
-                <div className="flex gap-4 flex-wrap">
-                  <div className="flex items-center gap-2 bg-surface-container px-3 py-1.5 rounded border border-outline-variant/30">
-                    <span className="text-on-surface-variant/60 text-[10px] font-mono uppercase">PC</span>
-                    <span className="font-mono text-primary-container text-[11px]">0x{pc.toString(16).toUpperCase().padStart(8,'0')}</span>
-                  </div>
-                  <div className="flex items-center gap-2 bg-surface-container px-3 py-1.5 rounded border border-outline-variant/30">
-                    <span className="text-on-surface-variant/60 text-[10px] font-mono uppercase">Cycle</span>
-                    <span className="font-mono text-primary-container text-[11px]">{registers[0] !== undefined ? (Array.from(updatedRegisters).length > 0 || true ? baseSim.currentCycle : 0) : 0}</span>
-                  </div>
-                </div>
-                {/* Register grid */}
-                <div className="grid grid-cols-[repeat(auto-fill,minmax(120px,1fr))] gap-1 overflow-y-auto" style={{maxHeight: "calc(100% - 48px)"}}>
-                  {regABINames.map((name, i) => {
-                    const val = registers[i] ?? 0;
-                    const isUpdated = updatedRegisters.has(i);
-                    return (
-                      <div key={i} className={`flex items-center gap-1.5 px-2 py-1 rounded text-[11px] font-mono border transition-all ${isUpdated ? 'border-success-green/60 bg-success-green/5' : 'border-outline-variant/20 bg-surface-container/50'}`}>
-                        <span className={`text-[9px] font-bold w-7 shrink-0 ${isUpdated ? 'text-success-green' : 'text-on-surface-variant/50'}`}>
-                          x{i}
-                        </span>
-                        <span className={`text-[9px] w-8 shrink-0 ${isUpdated ? 'text-yellow-400' : 'text-on-surface-variant/40'}`}>
-                          {name}
-                        </span>
-                        <span className={`text-[10px] ${isUpdated ? 'text-white' : 'text-on-surface-variant/70'}`}>
-                          {(val >>> 0).toString(16).toUpperCase().padStart(8,'0')}
-                        </span>
-                      </div>
-                    );
-                  })}
-                </div>
+          {activeBottomTab === "log" && (
+            <div className="flex flex-col gap-2 w-full h-full">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[10px] text-on-surface-variant/60 font-status-label uppercase tracking-widest">Code Execution Output</span>
+                <button 
+                  onClick={clearConsoleLogs}
+                  className="text-[10px] text-on-surface-variant/40 hover:text-on-surface transition-colors font-status-label flex items-center gap-1"
+                >
+                  <X size={10} /> CLEAR
+                </button>
               </div>
-            );
-          })()}
+              <div className="flex flex-col gap-1 overflow-y-auto">
+                {consoleLogs.filter(l => l.type === "info" || l.type === "success").length === 0 ? (
+                  <div className="text-on-surface-variant/30 italic text-[11px]">No output generated by code.</div>
+                ) : (
+                  consoleLogs
+                    .filter(l => l.type === "info" || l.type === "success")
+                    .map((log, idx) => (
+                    <div key={idx} className="flex gap-2 items-start py-1 border-b border-outline-variant/10">
+                      <span className="text-on-surface text-[12px] font-mono">{log.text}</span>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -154,10 +154,19 @@ const NodeBlock: React.FC<NodeProps> = ({ x, y, width = 160, title, fields, inPo
 // ─── Main Datapath Component ──────────────────────────────────────────────────
 export const DatapathTab: React.FC = () => {
   const { pc, registers, controlSignals, simulatorState } = useChronoStore();
-  const [zoom, setZoom] = useState(0.85);
-  const [pan, setPan] = useState({ x: 50, y: 50 });
+  const [zoom, setZoom] = useState(0.5);
+  const [pan, setPan] = useState({ x: 20, y: 50 });
   const dragging = useRef(false);
   const ds = useRef({ mx: 0, my: 0, px: 0, py: 0 });
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (containerRef.current) {
+      const width = containerRef.current.clientWidth;
+      // Diagram is approx 2000px wide. Leave some padding.
+      setZoom(Math.max(0.2, Math.min(1, (width - 40) / 2000)));
+    }
+  }, []);
 
   const sim = baseSim;
   const inst = sim.readWord(pc);
@@ -275,13 +284,8 @@ export const DatapathTab: React.FC = () => {
         <button className="p-1.5 hover:bg-[#1e293b] rounded text-[#94a3b8] transition-colors"><Settings size={18}/></button>
       </div>
 
-      <div className="absolute top-4 left-4 bg-[#0f172a] shadow-xl rounded-lg px-4 py-2 flex flex-col z-10 border border-[#1e293b]">
-        <span className="font-bold text-[#f8fafc] text-sm">RISC-V Datapath</span>
-        <span className="text-xs text-[#94a3b8]">Dark Orthogonal Mode</span>
-      </div>
-
       {/* ── Canvas ── */}
-      <div className="flex-1 overflow-hidden" onMouseDown={onMD} onMouseMove={onMM} onMouseUp={onMU} onMouseLeave={onMU} onWheel={onWheel} style={{ cursor: dragging.current ? "grabbing" : "grab" }}>
+      <div ref={containerRef} className="flex-1 overflow-hidden" onMouseDown={onMD} onMouseMove={onMM} onMouseUp={onMU} onMouseLeave={onMU} onWheel={onWheel} style={{ cursor: dragging.current ? "grabbing" : "grab" }}>
         <div style={{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`, transformOrigin: "0 0", width: 3000, height: 1500 }}>
           <svg width={3000} height={1500} style={{ overflow: "visible" }}>
             <defs>

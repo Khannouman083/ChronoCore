@@ -294,11 +294,11 @@ const App: React.FC = () => {
           </div>
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(15,19,28,0.95)_100%)] pointer-events-none -z-10"></div>
           
-          <div className="relative z-10 text-center max-w-4xl px-4 flex flex-col items-center mt-12">
-            <h1 className="font-headline-lg text-6xl md:text-8xl text-transparent bg-clip-text bg-gradient-to-b from-white to-secondary font-bold mb-4 tracking-tight fade-in-up text-glow">
+          <div className="relative z-10 text-center max-w-4xl px-6 md:px-4 flex flex-col items-center mt-12">
+            <h1 className="font-headline-lg text-5xl sm:text-6xl md:text-8xl text-transparent bg-clip-text bg-gradient-to-b from-white to-secondary font-bold mb-4 tracking-tight fade-in-up text-glow">
               ChronoCore
             </h1>
-            <p className="font-headline-sm text-headline-lg md:text-2xl text-primary-container mb-6 fade-in-up delay-100 drop-shadow-md">
+            <p className="font-headline-sm text-lg sm:text-xl md:text-2xl text-primary-container mb-6 fade-in-up delay-100 drop-shadow-md">
               The Ultimate Time-Travel Debugger for RISC-V.
             </p>
             <p className="text-on-surface-variant max-w-2xl mx-auto mb-10 text-base md:text-lg fade-in-up delay-200">
@@ -321,7 +321,7 @@ const App: React.FC = () => {
             </div>
 
             {/* Live System Status */}
-            <div className="flex flex-wrap justify-center gap-6 fade-in-up delay-300 bg-surface-container-high/50 backdrop-blur-md border border-outline-variant/30 rounded-full px-8 py-3 shadow-lg">
+            <div className="hidden md:flex flex-wrap justify-center gap-6 fade-in-up delay-300 bg-surface-container-high/50 backdrop-blur-md border border-outline-variant/30 rounded-full px-8 py-3 shadow-lg">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-success-green animate-pulse shadow-[0_0_8px_rgba(0,232,122,0.6)]"></div>
                 <span className="font-status-label text-[10px] text-on-surface-variant">
