@@ -1,0 +1,434 @@
+<!DOCTYPE html><html class="dark" lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>ChronoCore | Processor Architecture Visualization</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "outline": "#849396",
+                    "data-glow": "rgba(0, 229, 255, 0.2)",
+                    "on-primary-container": "#00626e",
+                    "primary": "#c3f5ff",
+                    "error-container": "#93000a",
+                    "secondary-container": "#3e4759",
+                    "secondary": "#bdc7dc",
+                    "inverse-on-surface": "#2c303a",
+                    "tertiary": "#ebecf5",
+                    "tertiary-fixed-dim": "#c4c6cf",
+                    "on-surface": "#dfe2ef",
+                    "inverse-surface": "#dfe2ef",
+                    "on-secondary-container": "#acb5ca",
+                    "on-primary": "#00363d",
+                    "tertiary-fixed": "#e1e2eb",
+                    "secondary-fixed": "#dae2f9",
+                    "on-background": "#dfe2ef",
+                    "primary-fixed-dim": "#00daf3",
+                    "on-error": "#690005",
+                    "on-tertiary-container": "#565960",
+                    "on-secondary": "#283141",
+                    "surface-variant": "#31353f",
+                    "surface-container-lowest": "#0a0e17",
+                    "background": "#0f131c",
+                    "surface-tint": "#00daf3",
+                    "on-primary-fixed": "#001f24",
+                    "primary-fixed": "#9cf0ff",
+                    "surface-container": "#1c2029",
+                    "on-tertiary-fixed": "#191c22",
+                    "surface-container-high": "#262a33",
+                    "surface-dim": "#0f131c",
+                    "secondary-fixed-dim": "#bdc7dc",
+                    "breakpoint-red": "#FF0000",
+                    "on-tertiary-fixed-variant": "#44474e",
+                    "on-tertiary": "#2d3037",
+                    "on-primary-fixed-variant": "#004f58",
+                    "on-secondary-fixed": "#121c2c",
+                    "success-glow": "rgba(0, 232, 122, 0.2)",
+                    "outline-variant": "#3b494c",
+                    "surface-container-highest": "#31353f",
+                    "on-surface-variant": "#bac9cc",
+                    "error": "#ffb4ab",
+                    "surface-container-low": "#181c25",
+                    "surface-bright": "#353943",
+                    "on-error-container": "#ffdad6",
+                    "tertiary-container": "#ced0d9",
+                    "terminal-black": "#000000",
+                    "on-secondary-fixed-variant": "#3e4759",
+                    "surface": "#0f131c",
+                    "success-green": "#00E87A",
+                    "hazard-orange": "#FF6D00",
+                    "primary-container": "#00e5ff",
+                    "inverse-primary": "#006875"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "panel-gap": "1px",
+                    "gutter-sm": "0.75rem",
+                    "header-height": "56px",
+                    "sidebar-collapsed": "64px",
+                    "sidebar-width": "240px",
+                    "footer-height": "28px",
+                    "container-padding": "1rem"
+            },
+            "fontFamily": {
+                    "nav-item": ["Hanken Grotesk"],
+                    "headline-sm": ["Hanken Grotesk"],
+                    "body-md": ["Hanken Grotesk"],
+                    "headline-lg": ["Hanken Grotesk"],
+                    "data-hex": ["JetBrains Mono"],
+                    "code-editor": ["JetBrains Mono"],
+                    "status-label": ["JetBrains Mono"],
+                    "value-tag": ["JetBrains Mono"]
+            },
+            "fontSize": {
+                    "nav-item": ["14px", {"lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                    "headline-sm": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                    "body-md": ["14px", {"lineHeight": "22px", "fontWeight": "400"}],
+                    "headline-lg": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "data-hex": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "code-editor": ["13px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "status-label": ["11px", {"lineHeight": "14px", "fontWeight": "700"}],
+                    "value-tag": ["10px", {"lineHeight": "12px", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #0f131c;
+            color: #dfe2ef;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            user-select: none;
+        }
+        .bus-line {
+            stroke: #3b494c;
+            stroke-width: 2;
+            fill: none;
+            transition: stroke 0.3s ease;
+        }
+        .bus-line.active {
+            stroke: #00e5ff;
+            filter: drop-shadow(0 0 4px rgba(0, 229, 255, 0.6));
+            stroke-dasharray: 5;
+            animation: flow 1s linear infinite;
+        }
+        @keyframes flow {
+            from { stroke-dashoffset: 10; }
+            to { stroke-dashoffset: 0; }
+        }
+        .block-unit {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .block-unit.glow-active {
+            box-shadow: inset 0 0 20px rgba(0, 232, 122, 0.1), 0 0 15px rgba(0, 232, 122, 0.2);
+            border-color: #00E87A !important;
+            background-color: rgba(0, 232, 122, 0.05) !important;
+        }
+        .block-unit.glow-hazard {
+            box-shadow: inset 0 0 20px rgba(255, 109, 0, 0.1), 0 0 15px rgba(255, 109, 0, 0.2);
+            border-color: #FF6D00 !important;
+            background-color: rgba(255, 109, 0, 0.05) !important;
+        }
+        .pipeline-stage-border {
+            border-right: 2px dashed #3b494c;
+        }
+    </style>
+</head>
+<body class="font-body-md text-body-md">
+<!-- TopNavBar -->
+<header class="flex justify-between items-center px-gutter-sm w-full h-header-height bg-surface-container dark:bg-surface-container border-b border-outline-variant fixed top-0 z-50">
+<div class="flex items-center gap-4">
+<span class="font-headline-lg text-headline-lg font-bold text-on-surface dark:text-on-surface">ChronoCore</span>
+<div class="relative group ml-8">
+  <button class="flex items-center gap-2 px-4 py-1.5 bg-surface-container-lowest border border-primary-container rounded text-primary-container font-data-hex text-nav-item hover:bg-primary-container/10 transition-all">
+    <span class="material-symbols-outlined text-[18px]">account_tree</span>
+    <span class="">PIPELINE</span>
+    <span class="material-symbols-outlined text-[18px] group-hover:rotate-180 transition-transform">expand_more</span>
+  </button>
+  <div class="absolute top-full left-0 mt-1 w-48 bg-surface-container-high border border-outline-variant rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+    <div class="p-1 flex flex-col">
+      <button class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:text-primary-container hover:bg-surface-variant rounded font-data-hex text-left">
+        <span class="material-symbols-outlined text-[18px]">cycle</span>
+        <span class="">SINGLE-CYCLE</span>
+      </button>
+      <button class="flex items-center gap-3 px-3 py-2 text-primary-container bg-primary-container/10 rounded font-data-hex text-left">
+        <span class="material-symbols-outlined text-[18px]">account_tree</span>
+        <span class="">PIPELINE</span>
+      </button>
+      <button class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:text-primary-container hover:bg-surface-variant rounded font-data-hex text-left">
+        <span class="material-symbols-outlined text-[18px]">layers</span>
+        <span class="">MULTI-CYCLE</span>
+      </button>
+    </div>
+  </div>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="w-8 h-8 flex items-center justify-center rounded hover:bg-surface-variant transition-all text-on-surface-variant hover:text-primary-container">
+<span class="material-symbols-outlined">settings_backup_restore</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center rounded hover:bg-surface-variant transition-all text-on-surface-variant hover:text-primary-container">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center rounded bg-error-container/20 text-error hover:bg-error-container/40 transition-all">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">stop</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center rounded bg-primary-container text-on-primary-container hover:brightness-110 transition-all">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center rounded hover:bg-surface-variant transition-all text-on-surface-variant hover:text-primary-container">
+<span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+</header>
+<!-- SideNavBar -->
+<aside class="flex flex-col h-full w-sidebar-width fixed left-0 top-header-height z-40 bg-surface-container-low dark:bg-surface-container-low border-r border-outline-variant">
+<div class="p-4 border-b border-outline-variant flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-primary-container/10 flex items-center justify-center text-primary-container">
+<span class="material-symbols-outlined">settings_input_component</span>
+</div>
+<div>
+<div class="font-headline-sm text-headline-sm text-primary-container">Simulation</div>
+<div class="font-status-label text-status-label text-on-surface-variant opacity-60">v4.2.0-Alpha</div>
+</div>
+</div>
+<nav class="flex-1 py-2 overflow-y-auto">
+<a class="flex items-center gap-3 text-on-surface-variant py-3 px-4 hover:bg-surface-variant hover:text-on-surface transition-all" href="#">
+<span class="material-symbols-outlined">code</span>
+<span class="font-nav-item text-nav-item">Editor</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant py-3 px-4 hover:bg-surface-variant hover:text-on-surface transition-all" href="#">
+<span class="material-symbols-outlined">memory</span>
+<span class="font-nav-item text-nav-item">CPU State</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant py-3 px-4 hover:bg-surface-variant hover:text-on-surface transition-all" href="#">
+<span class="material-symbols-outlined">storage</span>
+<span class="font-nav-item text-nav-item">Memory</span>
+</a>
+<a class="flex items-center gap-3 border-l-4 border-primary-container bg-surface-container-high text-primary-container py-3 px-4" href="#">
+<span class="material-symbols-outlined">account_tree</span>
+<span class="font-nav-item text-nav-item">Datapath</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant py-3 px-4 hover:bg-surface-variant hover:text-on-surface transition-all" href="#">
+<span class="material-symbols-outlined">reorder</span>
+<span class="font-nav-item text-nav-item">Pipeline</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant py-3 px-4 hover:bg-surface-variant hover:text-on-surface transition-all" href="#">
+<span class="material-symbols-outlined">settings_input_component</span>
+<span class="font-nav-item text-nav-item">Processor</span>
+</a>
+</nav>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-sidebar-width mt-header-height h-[calc(100vh-header-height-footer-height)] p-6 overflow-hidden relative">
+<!-- Controls Overlay -->
+<div class="absolute top-6 right-6 z-10 flex flex-col gap-2">
+<div class="bg-surface-container-high p-3 rounded-lg border border-outline-variant shadow-lg backdrop-blur-md">
+<div class="font-status-label text-status-label text-outline uppercase mb-2">Display Mode</div>
+<div class="flex gap-1 p-1 bg-surface-container-lowest rounded">
+<button class="px-3 py-1 rounded font-status-label text-status-label transition-all text-on-surface-variant" id="btn-single">SINGLE</button>
+<button class="px-3 py-1 rounded font-status-label text-status-label transition-all hover:text-on-surface bg-surface-variant text-on-surface" id="btn-pipeline">PIPELINE</button>
+</div>
+</div>
+<div class="bg-surface-container-high p-3 rounded-lg border border-outline-variant shadow-lg backdrop-blur-md">
+<div class="font-status-label text-status-label text-outline uppercase mb-2">Heat Signature</div>
+<div class="flex flex-col gap-2">
+<div class="flex items-center justify-between gap-4">
+<span class="text-[10px] font-status-label">Control Unit</span>
+<div class="w-3 h-3 rounded-full bg-success-green animate-pulse shadow-[0_0_8px_#00E87A]"></div>
+</div>
+<div class="flex items-center justify-between gap-4">
+<span class="text-[10px] font-status-label">ALU Activity</span>
+<div class="w-3 h-3 rounded-full bg-primary-container shadow-[0_0_8px_#00e5ff]"></div>
+</div>
+<div class="flex items-center justify-between gap-4" id="hazard-indicator">
+<span class="text-[10px] font-status-label">Hazard Det.</span>
+<div class="w-3 h-3 rounded-full bg-hazard-orange"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Architectural Diagram Container -->
+<div class="w-full h-full border border-outline-variant bg-surface-container-lowest relative overflow-hidden rounded-xl flex items-center justify-center p-8" id="diagram-canvas">
+<!-- SVG Background Bus Lines (Dynamic) -->
+<svg class="absolute inset-0 w-full h-full pointer-events-none">
+<path class="bus-line active" d="M150 300 H300" id="bus-if-id"></path>
+<path class="bus-line" d="M450 300 H600" id="bus-id-ex"></path>
+<path class="bus-line active" d="M750 300 H900" id="bus-ex-mem"></path>
+<path class="bus-line active" d="M1050 300 H1200" id="bus-mem-wb"></path>
+<!-- Control Lines -->
+<path class="bus-line opacity-20 active" d="M500 150 V250" stroke-dasharray="4"></path>
+<path class="bus-line opacity-20 active" d="M750 150 V250" stroke-dasharray="4"></path>
+</svg>
+<!-- Grid Content -->
+<div class="relative z-1 grid grid-cols-5 gap-8 w-full h-full items-center" id="processor-grid">
+<!-- Stage 1: Instruction Fetch -->
+<div class="flex flex-col gap-4 items-center h-full justify-center pipeline-stage-border pr-4">
+<div class="font-status-label text-status-label text-on-surface-variant/40 mb-2">IF</div>
+<div class="block-unit w-full max-w-[160px] aspect-square border border-outline-variant bg-surface-container flex flex-col p-4 rounded-lg">
+<div class="font-status-label text-status-label text-outline mb-auto">PC</div>
+<div class="font-data-hex text-data-hex text-primary-container text-center py-4">0x00400010</div>
+<div class="text-[9px] font-status-label text-on-surface-variant text-right">0x00400014</div>
+</div>
+<div class="block-unit w-full max-w-[160px] h-32 border border-outline-variant bg-surface-container flex flex-col p-4 rounded-lg">
+<div class="font-status-label text-status-label text-outline mb-auto">INST MEM</div>
+<div class="font-data-hex text-data-hex text-on-surface text-center opacity-70">lw t0, 0(a0)</div>
+</div>
+</div>
+<!-- Stage 2: Instruction Decode -->
+<div class="flex flex-col gap-4 items-center h-full justify-center pipeline-stage-border pr-4">
+<div class="font-status-label text-status-label text-on-surface-variant/40 mb-2">ID</div>
+<!-- Control Unit (Active Block) -->
+<div class="block-unit glow-active w-full max-w-[160px] h-24 border border-success-green bg-surface-container flex flex-col p-4 rounded-lg mb-4">
+<div class="font-status-label text-status-label text-success-green flex items-center justify-between">
+                            CONTROL UNIT
+                            <span class="w-1.5 h-1.5 rounded-full bg-success-green animate-ping"></span>
+</div>
+<div class="mt-2 grid grid-cols-3 gap-1">
+<div class="h-1 bg-success-green/40"></div>
+<div class="h-1 bg-success-green"></div>
+<div class="h-1 bg-success-green/20"></div>
+</div>
+</div>
+<div class="block-unit w-full max-w-[160px] h-48 border border-outline-variant bg-surface-container flex flex-col p-4 rounded-lg">
+<div class="font-status-label text-status-label text-outline mb-auto">REGISTERS</div>
+<div class="flex flex-col gap-1">
+<div class="flex justify-between font-data-hex text-[10px]">
+<span class="text-on-surface-variant">rs1:</span>
+<span class="text-primary-container">0x0001</span>
+</div>
+<div class="flex justify-between font-data-hex text-[10px]">
+<span class="text-on-surface-variant">rs2:</span>
+<span class="text-primary-container">0x0000</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Stage 3: Execute -->
+<div class="flex flex-col gap-4 items-center h-full justify-center pipeline-stage-border pr-4">
+<div class="font-status-label text-status-label text-on-surface-variant/40 mb-2">EX</div>
+<!-- Hazard Unit (Invisible/Inactive in Single Cycle) -->
+<div class="block-unit w-full max-w-[160px] h-20 border border-hazard-orange bg-surface-container flex flex-col p-3 rounded-lg mb-4 opacity-100 glow-hazard" id="hazard-unit-box">
+<div class="font-status-label text-status-label text-hazard-orange">HAZARD DETECT</div>
+<div class="font-data-hex text-[9px] mt-1 text-hazard-orange/60">IDLE_STATE</div>
+</div>
+<!-- ALU -->
+<div class="block-unit glow-active w-full max-w-[180px] h-40 border border-primary-container bg-surface-container flex flex-col p-4 rounded-lg relative overflow-hidden">
+<div class="font-status-label text-status-label text-primary-container">ALU</div>
+<div class="flex-1 flex items-center justify-center">
+<svg class="text-primary-container opacity-50" height="80" viewBox="0 0 60 80" width="60">
+<path d="M0 0 L60 20 L60 60 L0 80 L0 50 L15 40 L0 30 Z" fill="currentColor"></path>
+</svg>
+</div>
+<div class="absolute bottom-2 right-2 font-data-hex text-data-hex text-primary-container">ADD</div>
+</div>
+<!-- ALU Control -->
+<div class="block-unit w-full max-w-[140px] h-16 border border-outline-variant bg-surface-container flex flex-col p-2 rounded-lg">
+<div class="font-status-label text-[9px] text-outline">ALU CTRL</div>
+<div class="text-[10px] font-data-hex text-on-surface-variant">0010 (ADD)</div>
+</div>
+</div>
+<!-- Stage 4: Memory -->
+<div class="flex flex-col gap-4 items-center h-full justify-center pipeline-stage-border pr-4">
+<div class="font-status-label text-status-label text-on-surface-variant/40 mb-2">MEM</div>
+<div class="block-unit w-full max-w-[160px] h-48 border border-outline-variant bg-surface-container-high flex flex-col p-4 rounded-lg">
+<div class="font-status-label text-status-label text-outline mb-auto">DATA MEM</div>
+<div class="flex flex-col gap-2">
+<div class="h-2 w-full bg-outline-variant/20"></div>
+<div class="h-2 w-3/4 bg-primary-container/30"></div>
+<div class="h-2 w-full bg-outline-variant/20"></div>
+</div>
+</div>
+</div>
+<!-- Stage 5: Write Back -->
+<div class="flex flex-col gap-4 items-center h-full justify-center">
+<div class="font-status-label text-status-label text-on-surface-variant/40 mb-2">WB</div>
+<div class="block-unit w-full max-w-[140px] h-24 border border-outline-variant bg-surface-container flex flex-col p-4 rounded-lg">
+<div class="font-status-label text-status-label text-outline mb-auto">MUX</div>
+<div class="font-data-hex text-data-hex text-success-green">0x00000004</div>
+</div>
+</div>
+</div>
+<!-- Pipeline Register Shaders (Only visible in pipeline mode) -->
+<div class="absolute inset-0 pointer-events-none" id="pipeline-shaders">
+<div class="absolute left-[20%] top-0 bottom-0 w-1 bg-gradient-to-r from-transparent via-primary-container/20 to-transparent"></div>
+<div class="absolute left-[40%] top-0 bottom-0 w-1 bg-gradient-to-r from-transparent via-primary-container/20 to-transparent"></div>
+<div class="absolute left-[60%] top-0 bottom-0 w-1 bg-gradient-to-r from-transparent via-primary-container/20 to-transparent"></div>
+<div class="absolute left-[80%] top-0 bottom-0 w-1 bg-gradient-to-r from-transparent via-primary-container/20 to-transparent"></div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="fixed bottom-0 left-0 w-full z-50 flex justify-between items-center px-4 h-footer-height bg-surface-container-lowest dark:bg-surface-container-lowest border-t border-outline-variant"><div class="flex items-center gap-4"><span class="font-status-label text-status-label text-on-surface-variant uppercase">@2026 ChronoCore All Rights Reserved</span></div><div class="flex gap-6"><a href="#" class="font-status-label text-status-label text-on-surface-variant hover:text-success-green transition-all">GitHub</a><a href="#" class="font-status-label text-status-label text-on-surface-variant hover:text-success-green transition-all">Documentation</a><a href="#" class="font-status-label text-status-label text-on-surface-variant hover:text-success-green transition-all">Community</a></div></footer>
+<script>
+        const btnSingle = document.getElementById('btn-single');
+        const btnPipeline = document.getElementById('btn-pipeline');
+        const hazardUnit = document.getElementById('hazard-unit-box');
+        const hazardIndicator = document.getElementById('hazard-indicator');
+        const pipelineShaders = document.getElementById('pipeline-shaders');
+        const buses = document.querySelectorAll('.bus-line');
+        const stageBorders = document.querySelectorAll('.pipeline-stage-border');
+
+        function setMode(mode) {
+            if (mode === 'single') {
+                btnSingle.classList.add('bg-surface-variant', 'text-on-surface');
+                btnSingle.classList.remove('text-on-surface-variant');
+                btnPipeline.classList.remove('bg-surface-variant', 'text-on-surface');
+                btnPipeline.classList.add('text-on-surface-variant');
+                
+                hazardUnit.classList.add('opacity-10');
+                hazardUnit.classList.remove('opacity-100', 'glow-hazard');
+                hazardIndicator.classList.add('opacity-30');
+                pipelineShaders.classList.add('hidden');
+
+                stageBorders.forEach(el => el.classList.remove('pipeline-stage-border'));
+            } else {
+                btnPipeline.classList.add('bg-surface-variant', 'text-on-surface');
+                btnPipeline.classList.remove('text-on-surface-variant');
+                btnSingle.classList.remove('bg-surface-variant', 'text-on-surface');
+                btnSingle.classList.add('text-on-surface-variant');
+
+                hazardUnit.classList.remove('opacity-10');
+                hazardUnit.classList.add('opacity-100', 'glow-hazard');
+                hazardIndicator.classList.remove('opacity-30');
+                pipelineShaders.classList.remove('hidden');
+
+                document.querySelectorAll('#processor-grid > div:not(:last-child)').forEach(el => el.classList.add('pipeline-stage-border'));
+            }
+        }
+
+        btnSingle.addEventListener('click', () => setMode('single'));
+        btnPipeline.addEventListener('click', () => setMode('pipeline'));
+
+        // Randomly simulate bus activity
+        setInterval(() => {
+            buses.forEach(bus => {
+                if(Math.random() > 0.7) {
+                    bus.classList.toggle('active');
+                }
+            });
+        }, 2000);
+
+        // Initial setup
+        setMode('pipeline');
+    </script>
+
+
+</body></html>

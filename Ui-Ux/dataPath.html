@@ -1,0 +1,579 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>ChronoCore | Hardware Datapath Visualization</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline": "#849396",
+                        "data-glow": "rgba(0, 229, 255, 0.2)",
+                        "on-primary-container": "#00626e",
+                        "primary": "#c3f5ff",
+                        "error-container": "#93000a",
+                        "secondary-container": "#3e4759",
+                        "secondary": "#bdc7dc",
+                        "inverse-on-surface": "#2c303a",
+                        "tertiary": "#ebecf5",
+                        "tertiary-fixed-dim": "#c4c6cf",
+                        "on-surface": "#dfe2ef",
+                        "inverse-surface": "#dfe2ef",
+                        "on-secondary-container": "#acb5ca",
+                        "on-primary": "#00363d",
+                        "tertiary-fixed": "#e1e2eb",
+                        "secondary-fixed": "#dae2f9",
+                        "on-background": "#dfe2ef",
+                        "primary-fixed-dim": "#00daf3",
+                        "on-error": "#690005",
+                        "on-tertiary-container": "#565960",
+                        "on-secondary": "#283141",
+                        "surface-variant": "#31353f",
+                        "surface-container-lowest": "#0a0e17",
+                        "background": "#0f131c",
+                        "surface-tint": "#00daf3",
+                        "on-primary-fixed": "#001f24",
+                        "primary-fixed": "#9cf0ff",
+                        "surface-container": "#1c2029",
+                        "on-tertiary-fixed": "#191c22",
+                        "surface-container-high": "#262a33",
+                        "surface-dim": "#0f131c",
+                        "secondary-fixed-dim": "#bdc7dc",
+                        "breakpoint-red": "#FF0000",
+                        "on-tertiary-fixed-variant": "#44474e",
+                        "on-tertiary": "#2d3037",
+                        "on-primary-fixed-variant": "#004f58",
+                        "on-secondary-fixed": "#121c2c",
+                        "success-glow": "rgba(0, 232, 122, 0.2)",
+                        "outline-variant": "#3b494c",
+                        "surface-container-highest": "#31353f",
+                        "on-surface-variant": "#bac9cc",
+                        "error": "#ffb4ab",
+                        "surface-container-low": "#181c25",
+                        "surface-bright": "#353943",
+                        "on-error-container": "#ffdad6",
+                        "tertiary-container": "#ced0d9",
+                        "terminal-black": "#000000",
+                        "on-secondary-fixed-variant": "#3e4759",
+                        "surface": "#0f131c",
+                        "success-green": "#00E87A",
+                        "hazard-orange": "#FF6D00",
+                        "primary-container": "#00e5ff",
+                        "inverse-primary": "#006875"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "panel-gap": "1px",
+                        "gutter-sm": "0.75rem",
+                        "header-height": "56px",
+                        "sidebar-collapsed": "64px",
+                        "sidebar-width": "240px",
+                        "footer-height": "28px",
+                        "container-padding": "1rem"
+                    },
+                    "fontFamily": {
+                        "nav-item": ["Hanken Grotesk"],
+                        "headline-sm": ["Hanken Grotesk"],
+                        "body-md": ["Hanken Grotesk"],
+                        "headline-lg": ["Hanken Grotesk"],
+                        "data-hex": ["JetBrains Mono"],
+                        "code-editor": ["JetBrains Mono"],
+                        "status-label": ["JetBrains Mono"],
+                        "value-tag": ["JetBrains Mono"]
+                    },
+                    "fontSize": {
+                        "nav-item": ["14px", {"lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                        "headline-sm": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                        "body-md": ["14px", {"lineHeight": "22px", "fontWeight": "400"}],
+                        "headline-lg": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                        "data-hex": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "code-editor": ["13px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "status-label": ["11px", {"lineHeight": "14px", "fontWeight": "700"}],
+                        "value-tag": ["10px", {"lineHeight": "12px", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: #0f131c;
+            color: #dfe2ef;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        .datapath-svg {
+            width: 100%;
+            height: 100%;
+            user-select: none;
+        }
+
+        .data-bus {
+            stroke: rgba(0, 229, 255, 0.4);
+            stroke-width: 4;
+            fill: none;
+            filter: drop-shadow(0 0 2px rgba(0, 229, 255, 0.8));
+        }
+
+        .control-wire {
+            stroke: rgba(255, 109, 0, 0.6);
+            stroke-width: 1.5;
+            fill: none;
+            stroke-dasharray: 4;
+            filter: drop-shadow(0 0 2px rgba(255, 109, 0, 0.8));
+        }
+
+        .particle {
+            fill: #ffffff;
+            filter: drop-shadow(0 0 4px #00e5ff);
+        }
+
+        .control-particle {
+            fill: #ffffff;
+            filter: drop-shadow(0 0 4px #FF6D00);
+        }
+
+        .component-box {
+            fill: #181c25;
+            stroke: #3b494c;
+            stroke-width: 1.5;
+            transition: all 0.3s ease;
+        }
+
+        .component-box:hover {
+            stroke: #00e5ff;
+            fill: #1c2029;
+            filter: drop-shadow(0 0 8px rgba(0, 229, 255, 0.3));
+        }
+
+        .component-box-alu {
+            fill: #181c25;
+            stroke: #FF6D00;
+            stroke-width: 1.5;
+            transition: all 0.3s ease;
+        }
+        
+        .component-box-alu:hover {
+            fill: #1c2029;
+            filter: drop-shadow(0 0 8px rgba(255, 109, 0, 0.3));
+        }
+
+        .alu-active {
+            fill: rgba(255, 109, 0, 0.1);
+            stroke: #FF6D00;
+            animation: aluPulse 2s infinite alternate;
+        }
+
+        @keyframes aluPulse {
+            0% { filter: drop-shadow(0 0 2px rgba(255, 109, 0, 0.5)); }
+            100% { filter: drop-shadow(0 0 10px rgba(255, 109, 0, 0.8)); }
+        }
+
+        .hex-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            fill: #00e5ff;
+            font-weight: 600;
+            text-shadow: 0 0 4px rgba(0, 229, 255, 0.5);
+        }
+        
+        .val-bg {
+            fill: rgba(15, 19, 28, 0.8);
+            stroke: #3b494c;
+            stroke-width: 1;
+            rx: 2;
+        }
+
+        .component-label {
+            font-family: 'Hanken Grotesk', sans-serif;
+            font-size: 11px;
+            font-weight: 700;
+            fill: #dfe2ef;
+            letter-spacing: 0.05em;
+        }
+        
+        .port-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 8px;
+            fill: #bac9cc;
+        }
+
+        .glass-overlay {
+            background: rgba(15, 19, 28, 0.8);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(132, 147, 150, 0.2);
+        }
+
+        /* Scanline effect */
+        .scanline {
+            width: 100%;
+            height: 100px;
+            z-index: 10;
+            background: linear-gradient(0deg, rgba(0, 229, 255, 0) 0%, rgba(0, 229, 255, 0.03) 50%, rgba(0, 229, 255, 0) 100%);
+            opacity: 0.1;
+            position: absolute;
+            pointer-events: none;
+            animation: scanlineMove 8s linear infinite;
+        }
+
+        @keyframes scanlineMove {
+            0% { top: -100px; }
+            100% { top: 100%; }
+        }
+        
+        /* Grid pattern */
+        .datapath-grid {
+            background-image: 
+                linear-gradient(to right, rgba(132, 147, 150, 0.05) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(132, 147, 150, 0.05) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+    </style>
+</head>
+<body class="flex flex-col">
+<!-- TopNavBar -->
+<header class="flex justify-between items-center px-gutter-sm w-full h-header-height bg-surface-container dark:bg-surface-container border-b border-outline-variant fixed top-0 z-50">
+<div class="flex items-center gap-6">
+<span class="font-headline-lg text-headline-lg font-bold text-on-surface dark:text-on-surface">ChronoCore</span>
+<div class="relative group">
+  <button class="flex items-center gap-2 px-3 py-1.5 bg-surface-container-low border border-primary-container/50 rounded hover:border-primary-container transition-all">
+    <span class="font-status-label text-status-label text-primary-container">MODE:</span>
+    <span class="font-data-hex text-data-hex text-on-surface">PIPELINE</span>
+    <span class="material-symbols-outlined text-primary-container" style="font-size: 18px;">expand_more</span>
+  </button>
+  <div class="absolute top-full left-0 mt-1 w-40 glass-overlay border border-outline-variant rounded shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+    <div class="flex flex-col py-1">
+      <a href="#" class="px-4 py-2 font-data-hex text-data-hex text-on-surface-variant hover:bg-primary-container/10 hover:text-primary-container transition-colors">SINGLE-CYCLE</a>
+      <a href="#" class="px-4 py-2 font-data-hex text-data-hex text-on-surface-variant hover:bg-primary-container/10 hover:text-primary-container transition-colors">MULTI-CYCLE</a>
+      <a href="#" class="px-4 py-2 font-data-hex text-data-hex text-primary-container bg-primary-container/5">PIPELINE</a>
+    </div>
+  </div>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="w-8 h-8 flex items-center justify-center text-on-surface-variant hover:text-primary-container transition-all">
+<span class="material-symbols-outlined" style="font-size: 20px;">settings_backup_restore</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center text-on-surface-variant hover:text-primary-container transition-all">
+<span class="material-symbols-outlined" style="font-size: 20px;">arrow_back</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center text-hazard-orange hover:brightness-125 transition-all">
+<span class="material-symbols-outlined" style="font-size: 20px; font-variation-settings: 'FILL' 1;">stop</span>
+</button>
+<button class="w-10 h-10 bg-primary-container text-on-primary rounded-full flex items-center justify-center hover:shadow-[0_0_15px_rgba(0,229,255,0.4)] transition-all">
+<span class="material-symbols-outlined" style="font-size: 24px; font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center text-on-surface-variant hover:text-primary-container transition-all">
+<span class="material-symbols-outlined" style="font-size: 20px;">arrow_forward</span>
+</button>
+</div>
+</header>
+<div class="flex flex-1 mt-header-height mb-footer-height">
+<!-- SideNavBar -->
+<aside class="flex flex-col h-full w-sidebar-width fixed left-0 z-40 bg-surface-container-low dark:bg-surface-container-low border-r border-outline-variant">
+<div class="p-4 border-b border-outline-variant">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-primary-container/20 flex items-center justify-center text-primary-container">
+<span class="material-symbols-outlined">memory</span>
+</div>
+<div>
+<div class="font-headline-sm text-headline-sm text-primary-container leading-none">Simulation</div>
+<div class="font-status-label text-status-label text-on-surface-variant opacity-60">v4.2.0-Alpha</div>
+</div>
+</div>
+</div>
+<nav class="flex-1 py-2 overflow-y-auto">
+<a class="flex items-center gap-3 text-on-surface-variant py-3 px-4 hover:bg-surface-variant hover:text-on-surface transition-all font-nav-item text-nav-item" href="#">
+<span class="material-symbols-outlined">code</span> Editor
+                </a>
+<a class="flex items-center gap-3 text-on-surface-variant py-3 px-4 hover:bg-surface-variant hover:text-on-surface transition-all font-nav-item text-nav-item" href="#">
+<span class="material-symbols-outlined">memory</span> CPU State
+                </a>
+<a class="flex items-center gap-3 text-on-surface-variant py-3 px-4 hover:bg-surface-variant hover:text-on-surface transition-all font-nav-item text-nav-item" href="#">
+<span class="material-symbols-outlined">storage</span> Memory
+                </a>
+<a class="border-l-4 border-primary-container bg-surface-container-high text-primary-container py-3 px-4 flex items-center gap-3 font-nav-item text-nav-item" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">account_tree</span> Datapath
+                </a>
+<a class="flex items-center gap-3 text-on-surface-variant py-3 px-4 hover:bg-surface-variant hover:text-on-surface transition-all font-nav-item text-nav-item" href="#">
+<span class="material-symbols-outlined">reorder</span> Pipeline
+                </a>
+<a class="flex items-center gap-3 text-on-surface-variant py-3 px-4 hover:bg-surface-variant hover:text-on-surface transition-all font-nav-item text-nav-item" href="#">
+<span class="material-symbols-outlined">settings_input_component</span> Processor
+                </a>
+</nav>
+<div class="p-4 border-t border-outline-variant">
+<div class="bg-surface-container p-2 rounded flex items-center justify-between">
+<span class="font-status-label text-status-label text-success-green">CORE LOAD</span>
+<div class="w-16 h-1 bg-surface-variant rounded-full overflow-hidden">
+<div class="h-full bg-success-green w-1/3 shadow-[0_0_8px_#00E87A]"></div>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="ml-sidebar-width flex-1 relative bg-background overflow-hidden datapath-grid">
+<div class="scanline"></div>
+<!-- Canvas HUD -->
+<div class="absolute top-4 left-4 z-20 flex flex-col gap-2 pointer-events-none">
+<div class="glass-overlay px-3 py-1 rounded text-primary-container flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-success-green animate-pulse"></span>
+<span class="font-status-label text-status-label">LIVESTREAM: RV32I CORE ARCHITECTURE</span>
+</div>
+</div>
+<div class="absolute top-4 right-4 z-20 flex flex-col gap-2">
+<button class="glass-overlay p-2 text-on-surface hover:text-primary-container transition-all">
+<span class="material-symbols-outlined">zoom_in</span>
+</button>
+<button class="glass-overlay p-2 text-on-surface hover:text-primary-container transition-all">
+<span class="material-symbols-outlined">zoom_out</span>
+</button>
+<button class="glass-overlay p-2 text-on-surface hover:text-primary-container transition-all">
+<span class="material-symbols-outlined">grid_on</span>
+</button>
+</div>
+<!-- SVG Datapath Detailed -->
+<svg class="datapath-svg" preserveAspectRatio="xMidYMid meet" viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+<!-- STAGE DELIMITERS -->
+<g opacity="0.3">
+<line stroke="#3b494c" stroke-dasharray="10 5" stroke-width="2" x1="220" x2="220" y1="50" y2="750"></line>
+<text class="component-label" fill="#849396" text-anchor="middle" x="110" y="70">IF (FETCH)</text>
+<line stroke="#3b494c" stroke-dasharray="10 5" stroke-width="2" x1="480" x2="480" y1="50" y2="750"></line>
+<text class="component-label" fill="#849396" text-anchor="middle" x="350" y="70">ID (DECODE)</text>
+<line stroke="#3b494c" stroke-dasharray="10 5" stroke-width="2" x1="780" x2="780" y1="50" y2="750"></line>
+<text class="component-label" fill="#849396" text-anchor="middle" x="630" y="70">EX (EXECUTE)</text>
+<line stroke="#3b494c" stroke-dasharray="10 5" stroke-width="2" x1="1020" x2="1020" y1="50" y2="750"></line>
+<text class="component-label" fill="#849396" text-anchor="middle" x="900" y="70">MEM (MEMORY)</text>
+<text class="component-label" fill="#849396" text-anchor="middle" x="1110" y="70">WB (WRITE)</text>
+</g>
+<!-- DATA BUSES (Thick Cyan) -->
+<!-- PC to Instr Mem -->
+<path class="data-bus" d="M 120 380 L 150 380" id="bus-pc-imem"></path>
+<!-- PC to Add 4 -->
+<path class="data-bus" d="M 135 380 L 135 250 L 150 250" id="bus-pc-add4"></path>
+<!-- Add 4 out to MUX -->
+<path class="data-bus" d="M 210 260 L 230 260" id="bus-add4-mux"></path>
+<!-- Instr Mem to Decode (Instruction Bus) -->
+<path class="data-bus" d="M 260 380 L 320 380 L 320 320" id="bus-inst-rs1"></path>
+<path class="data-bus" d="M 320 380 L 320 440 L 340 440" id="bus-inst-rs2"></path>
+<path class="data-bus" d="M 280 380 L 280 550 L 340 550" id="bus-inst-imm"></path>
+<path class="data-bus" d="M 270 380 L 270 150 L 340 150" id="bus-inst-ctrl"></path>
+<path class="data-bus" d="M 320 380 L 360 380" id="bus-inst-rd"></path>
+<!-- Reg File Read Data 1 to ALU -->
+<path class="data-bus" d="M 460 340 L 620 340" id="bus-rd1-alu"></path>
+<!-- Reg File Read Data 2 to MUX & Mem -->
+<path class="data-bus" d="M 460 420 L 520 420" id="bus-rd2-split"></path>
+<path class="data-bus" d="M 520 420 L 520 380 L 560 380" id="bus-rd2-mux"></path>
+<path class="data-bus" d="M 520 420 L 520 500 L 800 500 L 800 420 L 840 420" id="bus-rd2-mem"></path>
+<!-- Imm Gen to MUX & Add Branch -->
+<path class="data-bus" d="M 440 550 L 490 550" id="bus-imm-split"></path>
+<path class="data-bus" d="M 490 550 L 490 400 L 560 400" id="bus-imm-mux"></path>
+<path class="data-bus" d="M 490 550 L 490 220 L 640 220" id="bus-imm-addb"></path>
+<!-- PC to Add Branch -->
+<path class="data-bus" d="M 135 250 L 135 120 L 620 120 L 620 200 L 640 200" id="bus-pc-addb"></path>
+<!-- ALU MUX to ALU -->
+<path class="data-bus" d="M 590 390 L 620 390" id="bus-alumux-alu"></path>
+<!-- ALU Out to Mem & WB Mux -->
+<path class="data-bus" d="M 720 365 L 760 365" id="bus-alu-split"></path>
+<path class="data-bus" d="M 760 365 L 840 365" id="bus-alu-mem"></path>
+<path class="data-bus" d="M 760 365 L 760 300 L 1040 300 L 1040 360 L 1060 360" id="bus-alu-wbmux"></path>
+<!-- Data Mem to WB Mux -->
+<path class="data-bus" d="M 960 390 L 1060 390" id="bus-mem-wbmux"></path>
+<!-- Add Branch to PC Mux -->
+<path class="data-bus" d="M 680 210 L 730 210 L 730 80 L 40 80 L 40 390 L 50 390" id="bus-addb-pcmux"></path>
+<!-- WB Mux to Reg File Write Data -->
+<path class="data-bus" d="M 1090 375 L 1120 375 L 1120 620 L 310 620 L 310 480 L 340 480" id="bus-wb-reg"></path>
+<!-- PC MUX to PC -->
+<path class="data-bus" d="M 70 380 L 80 380" id="bus-pcmux-pc"></path>
+<!-- CONTROL WIRES (Thin Orange Dashed) -->
+<!-- Control to PC Mux (Branch & Zero) -->
+<path class="control-wire" d="M 460 140 L 700 140 L 700 365 L 680 365" id="ctrl-branch"></path>
+<path class="control-wire" d="M 720 365 L 740 365 L 740 160 L 60 160 L 60 370" id="ctrl-zero-and"></path>
+<!-- Control to ALU Mux (ALUSrc) -->
+<path class="control-wire" d="M 460 150 L 575 150 L 575 375" id="ctrl-alusrc"></path>
+<!-- Control to ALU (ALUOp) -->
+<path class="control-wire" d="M 460 160 L 660 160 L 660 310" id="ctrl-aluop"></path>
+<!-- Control to Data Mem (MemWrite / MemRead) -->
+<path class="control-wire" d="M 460 170 L 900 170 L 900 320" id="ctrl-memwrite"></path>
+<!-- Control to WB Mux (MemtoReg) -->
+<path class="control-wire" d="M 460 180 L 1075 180 L 1075 355" id="ctrl-memtoreg"></path>
+<!-- Control to Reg File (RegWrite) -->
+<path class="control-wire" d="M 460 190 L 460 270 L 370 270 L 370 290" id="ctrl-regwrite"></path>
+<!-- PARTICLES -->
+<circle class="particle" r="3"><animateMotion dur="1s" path="M 120 380 L 150 380" repeatCount="indefinite"></animateMotion></circle>
+<circle class="particle" r="3"><animateMotion dur="2s" path="M 260 380 L 320 380 L 320 320" repeatCount="indefinite"></animateMotion></circle>
+<circle class="particle" r="3"><animateMotion dur="1.5s" path="M 460 340 L 620 340" repeatCount="indefinite"></animateMotion></circle>
+<circle class="particle" r="3"><animateMotion dur="1.8s" path="M 460 420 L 520 420 L 520 380 L 560 380" repeatCount="indefinite"></animateMotion></circle>
+<circle class="particle" r="3"><animateMotion dur="2.5s" path="M 720 365 L 760 365 L 760 300 L 1040 300 L 1040 360 L 1060 360" repeatCount="indefinite"></animateMotion></circle>
+<circle class="particle" r="3"><animateMotion dur="3s" path="M 1090 375 L 1120 375 L 1120 620 L 310 620 L 310 480 L 340 480" repeatCount="indefinite"></animateMotion></circle>
+<!-- Control Particles -->
+<circle class="control-particle" r="2"><animateMotion dur="2s" path="M 460 190 L 460 270 L 370 270 L 370 290" repeatCount="indefinite"></animateMotion></circle>
+<circle class="control-particle" r="2"><animateMotion dur="2.5s" path="M 460 160 L 660 160 L 660 310" repeatCount="indefinite"></animateMotion></circle>
+<!-- COMPONENTS -->
+<!-- PC Mux -->
+<g transform="translate(50, 370)">
+<polygon class="component-box" points="0,0 20,5 20,25 0,30"></polygon>
+</g>
+<!-- PC (Program Counter) -->
+<g transform="translate(80, 350)">
+<rect class="component-box" height="60" rx="4" width="40" x="0" y="0"></rect>
+<text class="component-label" text-anchor="middle" x="20" y="35">PC</text>
+</g>
+<!-- Add 4 (PC + 4) -->
+<g transform="translate(150, 240)">
+<polygon class="component-box-alu" points="0,0 40,10 40,30 0,40 0,25 10,20 0,15"></polygon>
+<text class="component-label" text-anchor="middle" x="25" y="24">+4</text>
+</g>
+<!-- Instruction Memory -->
+<g transform="translate(150, 310)">
+<rect class="component-box" height="140" rx="4" width="110" x="0" y="0"></rect>
+<text class="component-label" text-anchor="middle" x="55" y="40">INSTR</text>
+<text class="component-label" text-anchor="middle" x="55" y="55">MEMORY</text>
+<text class="port-label" x="5" y="75">Read Address</text>
+<text class="port-label" text-anchor="middle" x="55" y="120">Instruction [31:0]</text>
+</g>
+<!-- Control Unit -->
+<g transform="translate(340, 130)">
+<rect class="component-box" height="80" rx="40" style="stroke-dasharray: 4;" width="120" x="0" y="0"></rect>
+<text class="component-label" text-anchor="middle" x="60" y="45">CONTROL</text>
+<text class="port-label" x="10" y="40">Instr[6:0]</text>
+</g>
+<!-- Register File -->
+<g transform="translate(340, 290)">
+<rect class="component-box" height="210" rx="4" width="120" x="0" y="0"></rect>
+<text class="component-label" text-anchor="middle" x="60" y="25">REGISTERS</text>
+<!-- Ports -->
+<text class="port-label" x="5" y="45">Read Reg 1</text>
+<text class="port-label" x="5" y="155">Read Reg 2</text>
+<text class="port-label" x="5" y="105">Write Reg</text>
+<text class="port-label" x="5" y="195">Write Data</text>
+<text class="port-label" text-anchor="end" x="115" y="65">Read Data 1</text>
+<text class="port-label" text-anchor="end" x="115" y="145">Read Data 2</text>
+</g>
+<!-- Imm Gen (Sign Extend) -->
+<g transform="translate(340, 520)">
+<ellipse class="component-box" cx="50" cy="30" rx="50" ry="30"></ellipse>
+<text class="component-label" text-anchor="middle" x="50" y="30">Imm Gen</text>
+</g>
+<!-- Add Branch (PC + Imm) -->
+<g transform="translate(640, 190)">
+<polygon class="component-box-alu" points="0,0 40,10 40,30 0,40 0,25 10,20 0,15"></polygon>
+<text class="component-label" text-anchor="middle" x="25" y="24">Add</text>
+</g>
+<!-- ALU MUX -->
+<g transform="translate(560, 370)">
+<polygon class="component-box" points="0,0 30,10 30,30 0,40"></polygon>
+<text class="port-label" text-anchor="middle" x="15" y="24">MUX</text>
+</g>
+<!-- ALU -->
+<g transform="translate(620, 310)">
+<polygon class="component-box-alu alu-active" points="0,0 60,30 60,80 0,110 0,65 15,55 0,45"></polygon>
+<text class="component-label" fill="#FF6D00" text-anchor="middle" x="35" y="60">ALU</text>
+<text class="port-label" fill="#FF6D00" x="65" y="60">Zero</text>
+</g>
+<!-- Data Memory -->
+<g transform="translate(840, 320)">
+<rect class="component-box" height="150" rx="4" width="120" x="0" y="0"></rect>
+<text class="component-label" text-anchor="middle" x="60" y="30">DATA MEMORY</text>
+<text class="port-label" x="5" y="60">Address</text>
+<text class="port-label" x="5" y="110">Write Data</text>
+<text class="port-label" text-anchor="end" x="115" y="80">Read Data</text>
+</g>
+<!-- WriteBack MUX -->
+<g transform="translate(1060, 355)">
+<polygon class="component-box" points="0,0 30,10 30,30 0,40"></polygon>
+<text class="port-label" text-anchor="middle" x="15" y="24">MUX</text>
+</g>
+<!-- VALUE TAGS -->
+<g class="value-tags">
+<!-- PC -->
+<rect class="val-bg" height="16" width="60" x="90" y="325"></rect>
+<text class="hex-label" text-anchor="middle" x="120" y="336">0x400010</text>
+<!-- Instruction -->
+<rect class="val-bg" height="16" width="70" x="260" y="360"></rect>
+<text class="hex-label" text-anchor="middle" x="295" y="371">0x00810133</text>
+<!-- Reg Read 1 -->
+<rect class="val-bg" height="16" width="40" x="480" y="325"></rect>
+<text class="hex-label" text-anchor="middle" x="500" y="336">0x0008</text>
+<!-- Reg Read 2 -->
+<rect class="val-bg" height="16" width="40" x="470" y="405"></rect>
+<text class="hex-label" text-anchor="middle" x="490" y="416">0x0004</text>
+<!-- Imm Gen -->
+<rect class="val-bg" height="16" width="40" x="400" y="535"></rect>
+<text class="hex-label" text-anchor="middle" x="420" y="546">0x0010</text>
+<!-- ALU Result -->
+<rect class="val-bg" height="16" width="40" x="700" y="350"></rect>
+<text class="hex-label" text-anchor="middle" x="720" y="361">0x000C</text>
+</g>
+</svg>
+<!-- Bottom Floating HUD -->
+<div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-4">
+<div class="glass-overlay px-6 py-3 rounded-xl flex items-center gap-8">
+<div class="flex flex-col">
+<span class="font-status-label text-status-label opacity-60">CLK FREQ</span>
+<span class="font-data-hex text-data-hex text-primary-container">2.45 GHz</span>
+</div>
+<div class="w-px h-8 bg-outline-variant"></div>
+<div class="flex flex-col">
+<span class="font-status-label text-status-label opacity-60">VOLTAGE</span>
+<span class="font-data-hex text-data-hex text-primary-container">1.10V</span>
+</div>
+<div class="w-px h-8 bg-outline-variant"></div>
+<div class="flex flex-col">
+<span class="font-status-label text-status-label opacity-60">TEMPERATURE</span>
+<span class="font-data-hex text-data-hex text-hazard-orange">42°C</span>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Footer Status -->
+<footer class="fixed bottom-0 left-0 w-full z-50 flex justify-between items-center px-4 h-footer-height bg-surface-container-lowest dark:bg-surface-container-lowest border-t border-outline-variant"><div class="flex items-center gap-4">
+  <span class="font-status-label text-status-label text-on-surface-variant">@2026 ChronoCore All Rights Reserved</span>
+  <div class="flex items-center gap-2">
+    <span class="w-2 h-2 rounded-full bg-success-green shadow-[0_0_8px_#00E87A] animate-pulse"></span>
+    <span class="font-status-label text-status-label text-success-green font-bold">SYSTEM ACTIVE</span>
+  </div>
+</div>
+<div class="flex items-center gap-6">
+  <a href="#" class="font-status-label text-status-label text-on-surface-variant hover:text-primary-container transition-colors">GitHub</a>
+  <a href="#" class="font-status-label text-status-label text-on-surface-variant hover:text-primary-container transition-colors">Documentation</a>
+  <a href="#" class="font-status-label text-status-label text-on-surface-variant hover:text-primary-container transition-colors">Community</a>
+</div></footer>
+<script>
+        // Simple micro-interaction for the datapath
+        const components = document.querySelectorAll('.component-box, .component-box-alu');
+        components.forEach(comp => {
+            comp.addEventListener('mouseenter', () => {
+                const g = comp.parentElement;
+                const label = g.querySelector('.component-label');
+                if (label && !comp.classList.contains('component-box-alu')) {
+                    label.setAttribute('fill', '#00e5ff');
+                }
+            });
+            comp.addEventListener('mouseleave', () => {
+                const g = comp.parentElement;
+                const label = g.querySelector('.component-label');
+                if (label && !comp.classList.contains('component-box-alu')) {
+                    label.setAttribute('fill', '#dfe2ef');
+                }
+            });
+        });
+    </script>
+
+
+
+
+</body></html>

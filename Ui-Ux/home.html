@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ChronoCore - The Ultimate Time-Travel Debugger for RISC-V</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-tint": "#00daf3",
+                      "surface-container-high": "#262a33",
+                      "success-glow": "rgba(0, 232, 122, 0.2)",
+                      "inverse-surface": "#dfe2ef",
+                      "on-secondary-fixed-variant": "#3e4759",
+                      "on-error": "#690005",
+                      "outline": "#849396",
+                      "on-secondary": "#283141",
+                      "primary-fixed-dim": "#00daf3",
+                      "surface-dim": "#0f131c",
+                      "surface-variant": "#31353f",
+                      "error": "#ffb4ab",
+                      "surface-container-lowest": "#0a0e17",
+                      "hazard-orange": "#FF6D00",
+                      "on-tertiary-fixed-variant": "#44474e",
+                      "success-green": "#00E87A",
+                      "on-primary-fixed": "#001f24",
+                      "error-container": "#93000a",
+                      "secondary-fixed": "#dae2f9",
+                      "on-background": "#dfe2ef",
+                      "background": "#0f131c",
+                      "surface": "#0f131c",
+                      "on-tertiary-container": "#565960",
+                      "on-primary": "#00363d",
+                      "tertiary-container": "#ced0d9",
+                      "primary": "#c3f5ff",
+                      "inverse-on-surface": "#2c303a",
+                      "surface-container-low": "#181c25",
+                      "secondary-container": "#3e4759",
+                      "on-secondary-fixed": "#121c2c",
+                      "tertiary-fixed-dim": "#c4c6cf",
+                      "data-glow": "rgba(0, 229, 255, 0.2)",
+                      "terminal-black": "#000000",
+                      "surface-container": "#1c2029",
+                      "on-tertiary-fixed": "#191c22",
+                      "secondary": "#bdc7dc",
+                      "tertiary-fixed": "#e1e2eb",
+                      "surface-container-highest": "#31353f",
+                      "inverse-primary": "#006875",
+                      "outline-variant": "#3b494c",
+                      "on-secondary-container": "#acb5ca",
+                      "secondary-fixed-dim": "#bdc7dc",
+                      "on-primary-container": "#00626e",
+                      "on-error-container": "#ffdad6",
+                      "on-tertiary": "#2d3037",
+                      "primary-container": "#00e5ff",
+                      "on-surface-variant": "#bac9cc",
+                      "surface-bright": "#353943",
+                      "breakpoint-red": "#FF0000",
+                      "tertiary": "#ebecf5",
+                      "primary-fixed": "#9cf0ff",
+                      "on-primary-fixed-variant": "#004f58",
+                      "on-surface": "#dfe2ef"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "sidebar-width": "240px",
+                      "sidebar-collapsed": "64px",
+                      "header-height": "56px",
+                      "panel-gap": "1px",
+                      "container-padding": "1rem",
+                      "footer-height": "28px",
+                      "gutter-sm": "0.75rem"
+              },
+              "fontFamily": {
+                      "status-label": [
+                              "JetBrains Mono"
+                      ],
+                      "nav-item": [
+                              "Hanken Grotesk"
+                      ],
+                      "data-hex": [
+                              "JetBrains Mono"
+                      ],
+                      "code-editor": [
+                              "JetBrains Mono"
+                      ],
+                      "headline-lg": [
+                              "Hanken Grotesk"
+                      ],
+                      "body-md": [
+                              "Hanken Grotesk"
+                      ],
+                      "value-tag": [
+                              "JetBrains Mono"
+                      ],
+                      "headline-sm": [
+                              "Hanken Grotesk"
+                      ]
+              },
+              "fontSize": {
+                      "status-label": [
+                              "11px",
+                              {
+                                      "lineHeight": "14px",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "nav-item": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "letterSpacing": "0.02em",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "data-hex": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "code-editor": [
+                              "13px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-lg": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "22px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "value-tag": [
+                              "10px",
+                              {
+                                      "lineHeight": "12px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-sm": [
+                              "18px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "600"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+<style>
+        .fade-in-up {
+            animation: fadeInUp 0.8s ease-out forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .delay-100 { animation-delay: 100ms; }
+        .delay-200 { animation-delay: 200ms; }
+        .delay-300 { animation-delay: 300ms; }
+        .glow-hover:hover {
+            box-shadow: 0 0 15px rgba(0, 229, 255, 0.5);
+        }
+        .text-glow {
+            text-shadow: 0 0 20px rgba(223, 226, 239, 0.3);
+        }
+        .scanlines {
+            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.1));
+            background-size: 100% 4px;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md text-body-md antialiased min-h-screen flex flex-col selection:bg-primary-container selection:text-on-primary-container">
+<!-- Header -->
+<header class="fixed top-0 w-full z-50 h-header-height bg-surface-container/80 backdrop-blur-md border-b border-outline-variant flex justify-between items-center px-4 md:px-8">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-container text-2xl" style="font-variation-settings: 'FILL' 1;">memory</span>
+<span class="font-headline-lg text-headline-lg text-on-surface tracking-tight">ChronoCore</span>
+</div>
+<div>
+<a class="bg-primary-container text-terminal-black font-nav-item text-nav-item px-5 py-2 rounded-full font-semibold hover:bg-primary transition-colors duration-200 glow-hover" href="#">Get Started</a>
+</div>
+</header>
+<!-- Hero Section -->
+<section class="relative min-h-screen flex items-center justify-center pt-header-height overflow-hidden">
+<div class="absolute inset-0 w-full h-full pointer-events-none -z-20">
+<canvas class="w-full h-full block" id="hero-glcanvas"></canvas>
+<script>
+const canvas = document.getElementById('hero-glcanvas');
+const gl = canvas.getContext('webgl');
+function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    gl.viewport(0, 0, canvas.width, canvas.height);
+}
+window.addEventListener('resize', resize);
+resize();
+
+const vertexShaderSource = `
+    attribute vec2 position;
+    void main() {
+        gl_Position = vec4(position, 0.0, 1.0);
+    }
+`;
+
+const fragmentShaderSource = `<webgl-shader src="{{DATA:ANIMATION:ANIMATION_21}}" class=""></webgl-shader>`;
+
+function createShader(gl, type, source) {
+    const shader = gl.createShader(type);
+    gl.shaderSource(shader, source);
+    gl.compileShader(shader);
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+        console.error(gl.getShaderInfoLog(shader));
+        gl.deleteShader(shader);
+        return null;
+    }
+    return shader;
+}
+
+const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
+const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
+
+const program = gl.createProgram();
+gl.attachShader(program, vertexShader);
+gl.attachShader(program, fragmentShader);
+gl.linkProgram(program);
+gl.useProgram(program);
+
+const positionBuffer = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+    -1.0, -1.0,
+     1.0, -1.0,
+    -1.0,  1.0,
+    -1.0,  1.0,
+     1.0, -1.0,
+     1.0,  1.0
+]), gl.STATIC_DRAW);
+
+const positionLocation = gl.getAttribLocation(program, "position");
+gl.enableVertexAttribArray(positionLocation);
+gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
+
+const timeLocation = gl.getUniformLocation(program, "u_time");
+const resolutionLocation = gl.getUniformLocation(program, "u_resolution");
+
+function render(time) {
+    time *= 0.001;
+    gl.uniform1f(timeLocation, time);
+    gl.uniform2f(resolutionLocation, canvas.width, canvas.height);
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
+    requestAnimationFrame(render);
+}
+requestAnimationFrame(render);
+</script>
+</div>
+<div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(15,19,28,0.95)_100%)] pointer-events-none -z-10"></div>
+<div class="relative z-10 text-center max-w-4xl px-4 flex flex-col items-center mt-12">
+<h1 class="font-headline-lg text-6xl md:text-8xl text-transparent bg-clip-text bg-gradient-to-b from-white to-secondary font-bold mb-4 tracking-tight fade-in-up text-glow">ChronoCore</h1>
+<p class="font-headline-sm text-headline-lg md:text-2xl text-primary-container mb-6 fade-in-up delay-100 drop-shadow-md">The Ultimate Time-Travel Debugger for RISC-V.</p>
+<p class="text-on-surface-variant max-w-2xl mx-auto mb-10 text-lg md:text-xl fade-in-up delay-200 drop-shadow">Visualize every cycle, trace every register, and debug complex pipelines with unprecedented clarity.</p>
+<div class="flex flex-col sm:flex-row gap-4 justify-center fade-in-up delay-300 mb-16">
+<a class="bg-primary-container text-terminal-black font-nav-item text-nav-item px-8 py-3 rounded-full font-bold hover:bg-primary transition-all duration-300 glow-hover flex items-center gap-2 justify-center shadow-[0_0_20px_rgba(0,229,255,0.3)] animate-pulse" href="#">
+<span class="material-symbols-outlined text-xl">play_arrow</span> Launch Simulator
+                </a>
+<a class="border border-outline text-on-surface bg-surface/50 backdrop-blur-sm font-nav-item text-nav-item px-8 py-3 rounded-full font-semibold hover:bg-surface-variant transition-colors duration-200 flex items-center gap-2 justify-center" href="#">
+<span class="material-symbols-outlined text-xl">menu_book</span> Read Docs
+                </a>
+</div>
+<!-- Live System Status -->
+<div class="flex flex-wrap justify-center gap-6 fade-in-up delay-300 bg-surface-container-high/50 backdrop-blur-md border border-outline-variant rounded-full px-8 py-3 shadow-lg">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-success-green animate-pulse shadow-[0_0_8px_rgba(0,232,122,0.6)]"></div>
+<span class="font-status-label text-status-label text-on-surface-variant">Active Instances: <span class="text-on-surface">1,042</span></span>
+</div>
+<div class="flex items-center gap-2 border-l border-outline-variant pl-6">
+<span class="material-symbols-outlined text-sm text-on-surface-variant">speed</span>
+<span class="font-status-label text-status-label text-on-surface-variant">Latency: <span class="text-on-surface">14ms</span></span>
+</div>
+<div class="flex items-center gap-2 border-l border-outline-variant pl-6">
+<span class="material-symbols-outlined text-sm text-on-surface-variant">verified_user</span>
+<span class="font-status-label text-status-label text-on-surface-variant">Uptime: <span class="text-on-surface">99.9%</span></span>
+</div>
+</div>
+</div>
+<div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce opacity-50 z-10">
+<span class="material-symbols-outlined text-3xl">keyboard_arrow_down</span>
+</div>
+</section>
+<!-- Trusted By Section -->
+<section class="py-20 bg-surface border-y border-outline-variant">
+<div class="max-w-7xl mx-auto px-4 md:px-8 text-center">
+<p class="font-status-label text-status-label text-on-surface-variant uppercase tracking-widest mb-12">Trusted by architectural teams at</p>
+<div class="flex flex-wrap justify-center items-center gap-12 md:gap-24 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
+<div class="flex items-center gap-3 font-headline-sm text-xl font-bold text-on-surface"><span class="material-symbols-outlined text-2xl">memory</span> CoreTech</div>
+<div class="flex items-center gap-3 font-headline-sm text-xl font-bold text-on-surface"><span class="material-symbols-outlined text-2xl">developer_board</span> Silicon Labs</div>
+<div class="flex items-center gap-3 font-headline-sm text-xl font-bold text-on-surface"><span class="material-symbols-outlined text-2xl">api</span> OpenISA</div>
+<div class="flex items-center gap-3 font-headline-sm text-xl font-bold text-on-surface"><span class="material-symbols-outlined text-2xl">biotech</span> NanoFab</div>
+</div>
+</div>
+</section>
+<!-- Features Section -->
+<section class="py-32 bg-surface-container-low border-b border-outline-variant relative overflow-hidden">
+<div class="absolute inset-0 scanlines pointer-events-none z-0"></div>
+<div class="max-w-7xl mx-auto px-4 md:px-8 relative z-10">
+<div class="text-center mb-20">
+<h2 class="font-headline-lg text-4xl text-on-surface font-bold mb-4">Precision Instrumentation</h2>
+<p class="text-on-surface-variant max-w-2xl mx-auto text-lg">Built for computer architects who demand low-level visibility.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<!-- Feature 1 -->
+<div class="bg-surface border border-secondary p-8 rounded-2xl hover:border-primary-container hover:shadow-[0_0_25px_rgba(0,229,255,0.15)] transition-all duration-300 group relative flex flex-col">
+<div class="absolute inset-0 bg-primary-container/5 opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl"></div>
+<div class="w-14 h-14 bg-surface-container-high rounded-full flex items-center justify-center mb-6 border border-outline-variant group-hover:border-primary-container shrink-0 transition-colors">
+<span class="material-symbols-outlined text-primary-container text-2xl">account_tree</span>
+</div>
+<h3 class="font-headline-sm text-xl text-on-surface mb-4">Pipeline Visualization</h3>
+<p class="text-on-surface-variant font-code-editor text-code-editor text-sm leading-relaxed mb-6">
+                        Track instructions through Fetch, Decode, Execute, Memory, and Writeback stages with cycle-accurate timing and dynamic stall resolution.
+                    </p>
+<ul class="mt-auto space-y-3 text-sm text-on-surface-variant font-status-label">
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-success-green text-[18px]">check</span> Visual hazard detection</li>
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-success-green text-[18px]">check</span> Forwarding path highlights</li>
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-success-green text-[18px]">check</span> Branch prediction metrics</li>
+</ul>
+</div>
+<!-- Feature 2 -->
+<div class="bg-surface border border-secondary p-8 rounded-2xl hover:border-primary-container hover:shadow-[0_0_25px_rgba(0,229,255,0.15)] transition-all duration-300 group relative flex flex-col">
+<div class="absolute inset-0 bg-primary-container/5 opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl"></div>
+<div class="w-14 h-14 bg-surface-container-high rounded-full flex items-center justify-center mb-6 border border-outline-variant group-hover:border-primary-container shrink-0 transition-colors">
+<span class="material-symbols-outlined text-primary-container text-2xl">storage</span>
+</div>
+<h3 class="font-headline-sm text-xl text-on-surface mb-4">Memory Tracing</h3>
+<p class="text-on-surface-variant font-code-editor text-code-editor text-sm leading-relaxed mb-6">
+                        Inspect cache hits/misses, view raw hex dumps, and monitor memory-mapped I/O with real-time <span class="text-data-glow font-bold">0xADDR</span> tracking and diffing.
+                    </p>
+<ul class="mt-auto space-y-3 text-sm text-on-surface-variant font-status-label">
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-success-green text-[18px]">check</span> MMIO device simulation</li>
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-success-green text-[18px]">check</span> Multi-level cache views</li>
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-success-green text-[18px]">check</span> Memory watchpoints</li>
+</ul>
+</div>
+<!-- Feature 3 -->
+<div class="bg-surface border border-secondary p-8 rounded-2xl hover:border-primary-container hover:shadow-[0_0_25px_rgba(0,229,255,0.15)] transition-all duration-300 group relative flex flex-col">
+<div class="absolute inset-0 bg-primary-container/5 opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl"></div>
+<div class="w-14 h-14 bg-surface-container-high rounded-full flex items-center justify-center mb-6 border border-outline-variant group-hover:border-primary-container shrink-0 transition-colors">
+<span class="material-symbols-outlined text-primary-container text-2xl">settings_input_component</span>
+</div>
+<h3 class="font-headline-sm text-xl text-on-surface mb-4">Architecture Agnostic</h3>
+<p class="text-on-surface-variant font-code-editor text-code-editor text-sm leading-relaxed mb-6">
+                        Support for RV32I base ISA with configurable extensions. Load custom ELF binaries or write assembly directly in the integrated editor.
+                    </p>
+<ul class="mt-auto space-y-3 text-sm text-on-surface-variant font-status-label">
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-success-green text-[18px]">check</span> Custom CSR definitions</li>
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-success-green text-[18px]">check</span> RV64GC support matrix</li>
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-success-green text-[18px]">check</span> Interrupt vector handling</li>
+</ul>
+</div>
+</div>
+</div>
+</section>
+<!-- How it Works Section -->
+<section class="py-32 bg-background border-b border-outline-variant">
+<div class="max-w-7xl mx-auto px-4 md:px-8">
+<div class="text-center mb-20">
+<h2 class="font-headline-lg text-4xl text-on-surface font-bold mb-4">How it Works</h2>
+<p class="text-on-surface-variant max-w-2xl mx-auto text-lg">From source code to hardware execution in three steps.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8 relative mt-8">
+<!-- Connecting Line (Desktop) -->
+<div class="hidden md:block absolute top-10 left-[16%] right-[16%] h-[2px] bg-outline-variant -z-10"></div>
+<!-- Step 1 -->
+<div class="relative flex flex-col items-center text-center px-4">
+<div class="w-20 h-20 bg-surface border-2 border-primary-container rounded-full flex items-center justify-center mb-6 z-10 shadow-[0_0_20px_rgba(0,229,255,0.2)] relative">
+<div class="absolute inset-2 bg-surface-container-high rounded-full flex items-center justify-center">
+<span class="font-data-hex text-xl text-primary-container font-bold">01</span>
+</div>
+</div>
+<h4 class="font-headline-sm text-xl text-on-surface mb-3">Load Code</h4>
+<p class="text-on-surface-variant">Input your RISC-V assembly or compiled C binary.</p>
+</div>
+<!-- Step 2 -->
+<div class="relative flex flex-col items-center text-center px-4">
+<div class="w-20 h-20 bg-surface border-2 border-primary-container rounded-full flex items-center justify-center mb-6 z-10 shadow-[0_0_20px_rgba(0,229,255,0.2)] relative">
+<div class="absolute inset-2 bg-surface-container-high rounded-full flex items-center justify-center">
+<span class="font-data-hex text-xl text-primary-container font-bold">02</span>
+</div>
+</div>
+<h4 class="font-headline-sm text-xl text-on-surface mb-3">Step through Cycles</h4>
+<p class="text-on-surface-variant">Use granular transport controls to move forward or backward in time.</p>
+</div>
+<!-- Step 3 -->
+<div class="relative flex flex-col items-center text-center px-4">
+<div class="w-20 h-20 bg-surface border-2 border-primary-container rounded-full flex items-center justify-center mb-6 z-10 shadow-[0_0_20px_rgba(0,229,255,0.2)] relative">
+<div class="absolute inset-2 bg-surface-container-high rounded-full flex items-center justify-center">
+<span class="font-data-hex text-xl text-primary-container font-bold">03</span>
+</div>
+</div>
+<h4 class="font-headline-sm text-xl text-on-surface mb-3">Visualize Datapath</h4>
+<p class="text-on-surface-variant">Observe register changes and bus activity instantly.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Community Section -->
+<section class="py-24 bg-surface-container">
+<div class="max-w-4xl mx-auto px-4 md:px-8 text-center">
+<h2 class="font-headline-lg text-3xl text-on-surface font-bold mb-4">ChronoCore Community</h2>
+<p class="text-on-surface-variant mb-10 text-lg">Join thousands of developers building the future of RISC-V architecture.</p>
+<div class="flex flex-col sm:flex-row gap-6 justify-center">
+<a class="bg-surface-container-highest border border-outline-variant text-on-surface font-nav-item text-nav-item px-8 py-3 rounded-full font-semibold hover:border-primary-container hover:text-primary-container transition-colors duration-200 flex items-center justify-center gap-2 shadow-sm" href="#">
+<span class="material-symbols-outlined text-xl">star</span> Star on GitHub
+            </a>
+<a class="bg-[#5865F2] text-white font-nav-item text-nav-item px-8 py-3 rounded-full font-semibold hover:bg-[#4752C4] transition-colors duration-200 flex items-center justify-center gap-2 shadow-sm" href="#">
+<span class="material-symbols-outlined text-xl">forum</span> Join Discord
+            </a>
+</div>
+</div>
+</section>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest border-t border-outline-variant pt-16 pb-8 mt-auto relative z-10">
+<div class="max-w-7xl mx-auto px-4 md:px-8">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+<div class="md:col-span-1">
+<div class="flex items-center gap-2 mb-6">
+<span class="material-symbols-outlined text-primary-container text-2xl" style="font-variation-settings: 'FILL' 1;">memory</span>
+<span class="font-headline-sm text-xl text-on-surface font-bold tracking-tight">ChronoCore</span>
+</div>
+<p class="font-status-label text-status-label text-on-surface-variant leading-relaxed mb-6">Advanced RISC-V architecture simulation and debugging environment.</p>
+<div class="flex gap-4">
+<a class="text-on-surface-variant hover:text-primary-container transition-colors" href="#"><span class="material-symbols-outlined">code</span></a>
+<a class="text-on-surface-variant hover:text-primary-container transition-colors" href="#"><span class="material-symbols-outlined">forum</span></a>
+<a class="text-on-surface-variant hover:text-primary-container transition-colors" href="#"><span class="material-symbols-outlined">bug_report</span></a>
+</div>
+</div>
+<div>
+<h5 class="font-status-label text-status-label text-on-surface uppercase mb-6 tracking-widest font-bold">Product</h5>
+<ul class="space-y-4">
+<li><a class="font-status-label text-status-label text-on-surface-variant hover:text-primary-container transition-colors block" href="#">Simulator</a></li>
+<li><a class="font-status-label text-status-label text-on-surface-variant hover:text-primary-container transition-colors block" href="#">ISA Extensions</a></li>
+<li><a class="font-status-label text-status-label text-on-surface-variant hover:text-primary-container transition-colors block" href="#">Pricing</a></li>
+<li><a class="font-status-label text-status-label text-on-surface-variant hover:text-primary-container transition-colors block" href="#">Changelog</a></li>
+</ul>
+</div>
+<div>
+<h5 class="font-status-label text-status-label text-on-surface uppercase mb-6 tracking-widest font-bold">Resources</h5>
+<ul class="space-y-4">
+<li><a class="font-status-label text-status-label text-on-surface-variant hover:text-primary-container transition-colors block" href="#">Documentation</a></li>
+<li><a class="font-status-label text-status-label text-on-surface-variant hover:text-primary-container transition-colors block" href="#">Tutorials</a></li>
+<li><a class="font-status-label text-status-label text-on-surface-variant hover:text-primary-container transition-colors block" href="#">API Reference</a></li>
+<li><a class="font-status-label text-status-label text-on-surface-variant hover:text-primary-container transition-colors block" href="#">Community</a></li>
+</ul>
+</div>
+<div>
+<h5 class="font-status-label text-status-label text-on-surface uppercase mb-6 tracking-widest font-bold">Company</h5>
+<ul class="space-y-4">
+<li><a class="font-status-label text-status-label text-on-surface-variant hover:text-primary-container transition-colors block" href="#">About Us</a></li>
+<li><a class="font-status-label text-status-label text-on-surface-variant hover:text-primary-container transition-colors block" href="#">Careers</a></li>
+<li><a class="font-status-label text-status-label text-on-surface-variant hover:text-primary-container transition-colors block" href="#">Blog</a></li>
+<li><a class="font-status-label text-status-label text-on-surface-variant hover:text-primary-container transition-colors block" href="#">Contact</a></li>
+</ul>
+</div>
+</div>
+<div class="border-t border-outline-variant/50 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+<p class="font-status-label text-status-label text-on-surface-variant">@2026 ChronoCore All Rights Reserved</p>
+<div class="flex gap-6">
+<a class="font-status-label text-status-label text-on-surface-variant hover:text-primary-container transition-colors" href="#">Privacy Policy</a>
+<a class="font-status-label text-status-label text-on-surface-variant hover:text-primary-container transition-colors" href="#">Terms of Service</a>
+</div>
+</div>
+</div>
+</footer>
+</body></html>

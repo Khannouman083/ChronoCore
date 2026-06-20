@@ -1,0 +1,408 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>ChronoCore | Terminal-Modern RV32I Debugger</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        /* Custom scrollbar for technical interface */
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1c2029;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #3b494c;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00e5ff;
+        }
+
+        /* Success Pulse for the status footer */
+        @keyframes pulse-success {
+            0% { box-shadow: 0 0 0 0 rgba(0, 232, 122, 0.4); }
+            70% { box-shadow: 0 0 0 6px rgba(0, 232, 122, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 232, 122, 0); }
+        }
+        .pulse-running {
+            animation: pulse-success 2s infinite;
+        }
+
+        /* Terminal blinking cursor */
+        .cursor-blink {
+            animation: blink 1s step-end infinite;
+        }
+        @keyframes blink {
+            from, to { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* Code Editor Highlight */
+        .code-line-active {
+            background: rgba(0, 229, 255, 0.05);
+            border-left: 2px solid #00e5ff;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "outline": "#849396",
+                      "data-glow": "rgba(0, 229, 255, 0.2)",
+                      "on-primary-container": "#00626e",
+                      "primary": "#c3f5ff",
+                      "error-container": "#93000a",
+                      "secondary-container": "#3e4759",
+                      "secondary": "#bdc7dc",
+                      "inverse-on-surface": "#2c303a",
+                      "tertiary": "#ebecf5",
+                      "tertiary-fixed-dim": "#c4c6cf",
+                      "on-surface": "#dfe2ef",
+                      "inverse-surface": "#dfe2ef",
+                      "on-secondary-container": "#acb5ca",
+                      "on-primary": "#00363d",
+                      "tertiary-fixed": "#e1e2eb",
+                      "secondary-fixed": "#dae2f9",
+                      "on-background": "#dfe2ef",
+                      "primary-fixed-dim": "#00daf3",
+                      "on-error": "#690005",
+                      "on-tertiary-container": "#565960",
+                      "on-secondary": "#283141",
+                      "surface-variant": "#31353f",
+                      "surface-container-lowest": "#0a0e17",
+                      "background": "#0f131c",
+                      "surface-tint": "#00daf3",
+                      "on-primary-fixed": "#001f24",
+                      "primary-fixed": "#9cf0ff",
+                      "surface-container": "#1c2029",
+                      "on-tertiary-fixed": "#191c22",
+                      "surface-container-high": "#262a33",
+                      "surface-dim": "#0f131c",
+                      "secondary-fixed-dim": "#bdc7dc",
+                      "breakpoint-red": "#FF0000",
+                      "on-tertiary-fixed-variant": "#44474e",
+                      "on-tertiary": "#2d3037",
+                      "on-primary-fixed-variant": "#004f58",
+                      "on-secondary-fixed": "#121c2c",
+                      "success-glow": "rgba(0, 232, 122, 0.2)",
+                      "outline-variant": "#3b494c",
+                      "surface-container-highest": "#31353f",
+                      "on-surface-variant": "#bac9cc",
+                      "error": "#ffb4ab",
+                      "surface-container-low": "#181c25",
+                      "surface-bright": "#353943",
+                      "on-error-container": "#ffdad6",
+                      "tertiary-container": "#ced0d9",
+                      "terminal-black": "#000000",
+                      "on-secondary-fixed-variant": "#3e4759",
+                      "surface": "#0f131c",
+                      "success-green": "#00E87A",
+                      "hazard-orange": "#FF6D00",
+                      "primary-container": "#00e5ff",
+                      "inverse-primary": "#006875"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "panel-gap": "1px",
+                      "gutter-sm": "0.75rem",
+                      "header-height": "56px",
+                      "sidebar-collapsed": "64px",
+                      "sidebar-width": "240px",
+                      "footer-height": "28px",
+                      "container-padding": "1rem"
+              },
+              "fontFamily": {
+                      "nav-item": ["Hanken Grotesk"],
+                      "headline-sm": ["Hanken Grotesk"],
+                      "body-md": ["Hanken Grotesk"],
+                      "headline-lg": ["Hanken Grotesk"],
+                      "data-hex": ["JetBrains Mono"],
+                      "code-editor": ["JetBrains Mono"],
+                      "status-label": ["JetBrains Mono"],
+                      "value-tag": ["JetBrains Mono"]
+              },
+              "fontSize": {
+                      "nav-item": ["14px", {"lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                      "headline-sm": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                      "body-md": ["14px", {"lineHeight": "22px", "fontWeight": "400"}],
+                      "headline-lg": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                      "data-hex": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                      "code-editor": ["13px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "status-label": ["11px", {"lineHeight": "14px", "fontWeight": "700"}],
+                      "value-tag": ["10px", {"lineHeight": "12px", "fontWeight": "600"}]
+              }
+            },
+          },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface font-body-md text-body-md overflow-hidden h-screen flex flex-col">
+<!-- TopNavBar -->
+<header class="flex justify-between items-center px-gutter-sm w-full h-header-height bg-surface-container border-b border-outline-variant z-50">
+<div class="flex items-center gap-8">
+<h1 class="font-headline-lg text-headline-lg font-bold text-on-surface">ChronoCore</h1>
+<div class="relative group">
+    <button class="flex items-center gap-3 px-3 py-1.5 bg-surface-container-lowest border border-primary-container/60 rounded text-primary-container font-nav-item text-nav-item hover:bg-primary-container/10 transition-all">
+        <span class="material-symbols-outlined text-[18px]">account_tree</span>
+        <span class="font-code-editor">Pipeline</span>
+        <span class="material-symbols-outlined text-[18px]">expand_more</span>
+    </button>
+    <div class="absolute top-full left-0 mt-1 w-48 bg-surface-container-high border border-outline-variant rounded shadow-lg hidden group-hover:block z-[60]">
+        <a href="#" class="flex items-center px-4 py-2 text-on-surface-variant hover:bg-surface-variant hover:text-primary-container font-code-editor text-[13px] transition-colors">
+            Single-Cycle
+        </a>
+        <a href="#" class="flex items-center px-4 py-2 text-on-surface-variant hover:bg-surface-variant hover:text-primary-container font-code-editor text-[13px] transition-colors">
+            Multi-Cycle
+        </a>
+        <a href="#" class="flex items-center px-4 py-2 bg-primary-container/10 text-primary-container font-code-editor text-[13px] border-l-2 border-primary-container">
+            Pipeline
+        </a>
+    </div>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="bg-primary-container text-on-primary font-bold px-4 py-1.5 rounded-lg text-nav-item hover:brightness-110 transition-all flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">bolt</span>
+                Compile &amp; Load
+            </button>
+<div class="h-6 w-[1px] bg-outline-variant mx-2"></div>
+<div class="flex items-center gap-1">
+<button class="w-8 h-8 flex items-center justify-center text-on-surface-variant hover:text-primary-container transition-colors">
+<span class="material-symbols-outlined">settings_backup_restore</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center text-on-surface-variant hover:text-primary-container transition-colors">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center text-on-surface-variant hover:text-primary-container transition-colors">
+<span class="material-symbols-outlined">stop</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center text-primary-container hover:brightness-125 transition-all">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center text-on-surface-variant hover:text-primary-container transition-colors">
+<span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+</div>
+</header>
+<div class="flex flex-1 overflow-hidden">
+<!-- SideNavBar -->
+<aside class="flex flex-col h-full w-sidebar-width bg-surface-container-low border-r border-outline-variant z-40">
+<div class="p-4 mb-2">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-primary-container/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary-container">memory</span>
+</div>
+<div>
+<p class="font-headline-sm text-headline-sm text-primary-container leading-tight">Simulation</p>
+<p class="font-status-label text-status-label text-on-surface-variant opacity-70">v4.2.0-Alpha</p>
+</div>
+</div>
+</div>
+<nav class="flex flex-col">
+<a class="border-l-4 border-primary-container bg-surface-container-high text-primary-container py-3 px-4 flex items-center gap-3 group transition-all" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">code</span>
+<span class="font-nav-item text-nav-item">Editor</span>
+</a>
+<a class="text-on-surface-variant py-3 px-4 flex items-center gap-3 hover:bg-surface-variant hover:text-on-surface transition-all" href="#">
+<span class="material-symbols-outlined">memory</span>
+<span class="font-nav-item text-nav-item">CPU State</span>
+</a>
+<a class="text-on-surface-variant py-3 px-4 flex items-center gap-3 hover:bg-surface-variant hover:text-on-surface transition-all" href="#">
+<span class="material-symbols-outlined">storage</span>
+<span class="font-nav-item text-nav-item">Memory</span>
+</a>
+<a class="text-on-surface-variant py-3 px-4 flex items-center gap-3 hover:bg-surface-variant hover:text-on-surface transition-all" href="#">
+<span class="material-symbols-outlined">account_tree</span>
+<span class="font-nav-item text-nav-item">Datapath</span>
+</a>
+<a class="text-on-surface-variant py-3 px-4 flex items-center gap-3 hover:bg-surface-variant hover:text-on-surface transition-all" href="#">
+<span class="material-symbols-outlined">reorder</span>
+<span class="font-nav-item text-nav-item">Pipeline</span>
+</a>
+<a class="text-on-surface-variant py-3 px-4 flex items-center gap-3 hover:bg-surface-variant hover:text-on-surface transition-all" href="#">
+<span class="material-symbols-outlined">settings_input_component</span>
+<span class="font-nav-item text-nav-item">Processor</span>
+</a>
+</nav>
+<!-- Small System Insight Card -->
+<div class="mt-auto p-4">
+<div class="border border-outline-variant p-3 rounded bg-surface-container-lowest/50">
+<div class="flex items-center justify-between mb-2">
+<span class="font-status-label text-status-label text-on-surface-variant">L1 CACHE</span>
+<span class="text-[10px] text-success-green">94% HIT</span>
+</div>
+<div class="w-full bg-surface-container h-1 rounded-full overflow-hidden">
+<div class="bg-success-green h-full w-[94%]"></div>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content (Editor & Terminal) -->
+<main class="flex-1 flex flex-col bg-surface-container-lowest relative">
+<!-- Code Editor Section -->
+<section class="flex-1 flex flex-col min-h-0 border-b border-outline-variant">
+<div class="h-8 bg-surface-container flex items-center px-4 justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[14px] text-on-surface-variant">description</span>
+<span class="font-status-label text-status-label text-on-surface">main.s</span>
+</div>
+<div class="flex items-center gap-4 text-on-surface-variant font-status-label text-status-label">
+<span class="">Ln 12, Col 4</span>
+<span class="">Spaces: 4</span>
+<span class="">UTF-8</span>
+</div>
+</div>
+<!-- Editor Canvas -->
+<div class="flex-1 overflow-auto font-code-editor text-code-editor flex">
+<!-- Line Numbers & Gutter -->
+<div class="w-12 bg-surface-container-low flex flex-col items-center py-4 border-r border-outline-variant text-outline/50 select-none">
+<div class="h-5 flex items-center justify-center relative w-full">1</div>
+<div class="h-5 flex items-center justify-center relative w-full">2</div>
+<div class="h-5 flex items-center justify-center relative w-full">3</div>
+<div class="h-5 flex items-center justify-center relative w-full">
+<div class="w-2.5 h-2.5 bg-breakpoint-red rounded-full absolute left-1.5 shadow-[0_0_8px_rgba(255,0,0,0.6)]"></div>
+                            4
+                        </div>
+<div class="h-5 flex items-center justify-center relative w-full">5</div>
+<div class="h-5 flex items-center justify-center relative w-full">6</div>
+<div class="h-5 flex items-center justify-center relative w-full">7</div>
+<div class="h-5 flex items-center justify-center relative w-full">
+<div class="w-2.5 h-2.5 bg-breakpoint-red rounded-full absolute left-1.5 shadow-[0_0_8px_rgba(255,0,0,0.6)]"></div>
+                            8
+                        </div>
+<div class="h-5 flex items-center justify-center relative w-full">9</div>
+<div class="h-5 flex items-center justify-center relative w-full">10</div>
+<div class="h-5 flex items-center justify-center relative w-full">11</div>
+<div class="h-5 flex items-center justify-center relative w-full bg-primary-container/10">12</div>
+<div class="h-5 flex items-center justify-center relative w-full">13</div>
+<div class="h-5 flex items-center justify-center relative w-full">14</div>
+</div>
+<!-- Code Content -->
+<div class="flex-1 py-4 px-4 whitespace-pre text-on-surface-variant/80">
+<div class=""><span class="text-outline">.section</span> .text</div>
+<div class=""><span class="text-outline">.globl</span> main</div>
+<div></div>
+<div><span class="text-primary-container font-bold">main:</span></div>
+<div> <span class="text-primary-fixed-dim">li</span> <span class="text-tertiary">a0, 0x10</span> <span class="text-outline/40"># Initialize address</span></div>
+<div> <span class="text-primary-fixed-dim">li</span> <span class="text-tertiary">t0, 100</span> <span class="text-outline/40"># Loop counter</span></div>
+<div> <span class="text-primary-fixed-dim">li</span> <span class="text-tertiary">s1, 0</span> <span class="text-outline/40"># Accumulator</span></div>
+<div></div>
+<div><span class="text-primary-container font-bold">loop:</span></div>
+<div> <span class="text-primary-fixed-dim">lw</span> <span class="text-tertiary">t1, 0(a0)</span> <span class="text-outline/40"># Load data</span></div>
+<div> <span class="text-primary-fixed-dim">add</span> <span class="text-tertiary">s1, s1, t1</span> <span class="text-outline/40"># Add to sum</span></div>
+<div class="code-line-active text-on-surface"> <span class="text-primary-fixed-dim">addi</span> <span class="text-tertiary">a0, a0, 4</span> <span class="text-outline/40"># Increment pointer</span></div>
+<div> <span class="text-primary-fixed-dim">addi</span> <span class="text-tertiary">t0, t0, -1</span> <span class="text-outline/40"># Decrement counter</span></div>
+<div> <span class="text-primary-fixed-dim">bnez</span> <span class="text-tertiary">t0, loop</span> <span class="text-outline/40"># Continue if t0 != 0</span></div>
+</div>
+</div>
+</section>
+<!-- Terminal Console Section -->
+<section class="h-1/3 flex flex-col bg-terminal-black">
+<div class="h-8 bg-surface-container-high border-b border-outline-variant flex items-center px-4 gap-6">
+<button class="font-status-label text-status-label text-primary-container border-b-2 border-primary-container h-full px-2">TERMINAL</button>
+<button class="font-status-label text-status-label text-on-surface-variant h-full px-2">PROBLEMS</button>
+<button class="font-status-label text-status-label text-on-surface-variant h-full px-2">WATCH</button>
+<div class="ml-auto flex items-center gap-2">
+<button class="w-6 h-6 flex items-center justify-center text-on-surface-variant hover:text-on-surface"><span class="material-symbols-outlined text-[16px]">close</span></button>
+</div>
+</div>
+<div class="flex-1 overflow-auto p-4 font-code-editor text-code-editor text-on-surface-variant leading-relaxed">
+<div class="text-outline/50 mb-2">[System Initialized] Running ChronoCore v4.2.0 (RV32I Core)</div>
+<div class="flex gap-2">
+<span class="text-success-green">chronocore@vm:~$</span>
+<span class="">make build --target=rv32i</span>
+</div>
+<div class="text-outline/70 ml-4">
+                        AS      main.s -o main.o<br>
+                        LD      main.o -o firmware.elf<br>
+                        OBJCOPY firmware.elf -O binary firmware.bin
+                    </div>
+<div class="text-success-green mt-1">Build Success: Output 1420 bytes generated.</div>
+<div class="flex gap-2 mt-2">
+<span class="text-success-green">chronocore@vm:~$</span>
+<span class="">load --file=firmware.bin --address=0x00400000</span>
+</div>
+<div class="text-primary-container mt-1">Status: Firmware loaded at 0x00400000. Entry point: 0x00400010.</div>
+<div class="flex gap-2 mt-2">
+<span class="text-success-green">chronocore@vm:~$</span>
+<span class="w-2 h-5 bg-primary-container/60 cursor-blink ml-1"></span>
+</div>
+</div>
+</section>
+</main>
+</div>
+<!-- Footer -->
+<footer class="fixed bottom-0 left-0 w-full z-50 flex justify-between items-center px-4 h-footer-height bg-surface-container-lowest border-t border-outline-variant">
+<div class="flex items-center gap-4">
+<span class="font-status-label text-status-label text-on-surface">ISA Extension: RV32I</span>
+<div class="h-3 w-[1px] bg-outline-variant"></div>
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-success-green pulse-running"></div>
+<span class="font-status-label text-status-label text-success-green font-bold">RUNNING</span>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2">
+<span class="font-status-label text-status-label text-on-surface-variant">Cycle:</span>
+<span class="font-data-hex text-data-hex text-primary-container">1042</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-status-label text-status-label text-on-surface-variant">PC:</span>
+<span class="font-data-hex text-data-hex text-primary-container">0x00400010</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-status-label text-status-label text-on-surface-variant">INST:</span>
+<span class="font-data-hex text-data-hex text-primary-container">ADDI</span>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<span class="font-status-label text-status-label text-on-surface-variant hover:text-primary-container cursor-default">Ln 12, Col 4</span>
+<span class="font-status-label text-status-label text-on-surface-variant hover:text-primary-container cursor-default">UTF-8</span>
+<span class="material-symbols-outlined text-[14px] text-on-surface-variant">notifications</span>
+</div>
+</footer>
+<script>
+        // Micro-interactions for editor line clicking
+        document.querySelectorAll('.h-5').forEach(line => {
+            line.addEventListener('click', function() {
+                // Toggle breakpoint visually if clicked in the gutter area
+                if(this.innerText.trim()) {
+                    let existing = this.querySelector('.bg-breakpoint-red');
+                    if(existing) {
+                        existing.remove();
+                    } else {
+                        let dot = document.createElement('div');
+                        dot.className = "w-2.5 h-2.5 bg-breakpoint-red rounded-full absolute left-1.5 shadow-[0_0_8px_rgba(255,0,0,0.6)]";
+                        this.appendChild(dot);
+                    }
+                }
+            });
+        });
+
+        // Simulate terminal input focus effect
+        const terminal = document.querySelector('.bg-terminal-black');
+        terminal.addEventListener('click', () => {
+            console.log('Terminal Focus Triggered');
+        });
+    </script>
+
+
+</body></html>

@@ -1,0 +1,113 @@
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: [
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
+  ],
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        // Standard tailwind overrides matching static HTML classes
+        "background": "#0f131c",
+        "surface": "#0f131c",
+        "surface-dim": "#0f131c",
+        "surface-bright": "#353943",
+        "surface-container-lowest": "#0a0e17",
+        "surface-container-low": "#181c25",
+        "surface-container": "#1c2029",
+        "surface-container-high": "#262a33",
+        "surface-container-highest": "#31353f",
+        "on-surface": "#dfe2ef",
+        "on-surface-variant": "#bac9cc",
+        "inverse-surface": "#dfe2ef",
+        "inverse-on-surface": "#2c303a",
+        "outline": "#849396",
+        "outline-variant": "#3b494c",
+        "surface-tint": "#00daf3",
+        "primary": "#c3f5ff",
+        "on-primary": "#00363d",
+        "primary-container": "#00e5ff",
+        "on-primary-container": "#00626e",
+        "inverse-primary": "#006875",
+        "secondary": "#bdc7dc",
+        "on-secondary": "#283141",
+        "secondary-container": "#3e4759",
+        "on-secondary-container": "#acb5ca",
+        "tertiary": "#ebecf5",
+        "on-tertiary": "#2d3037",
+        "tertiary-container": "#ced0d9",
+        "on-tertiary-container": "#565960",
+        "error": "#ffb4ab",
+        "on-error": "#690005",
+        "error-container": "#93000a",
+        "on-error-container": "#ffdad6",
+        "primary-fixed": "#9cf0ff",
+        "primary-fixed-dim": "#00daf3",
+        "on-primary-fixed": "#001f24",
+        "on-primary-fixed-variant": "#004f58",
+        "secondary-fixed": "#dae2f9",
+        "secondary-fixed-dim": "#bdc7dc",
+        "on-secondary-fixed": "#121c2c",
+        "on-secondary-fixed-variant": "#3e4759",
+        "tertiary-fixed": "#e1e2eb",
+        "tertiary-fixed-dim": "#c4c6cf",
+        "on-tertiary-fixed": "#191c22",
+        "on-tertiary-fixed-variant": "#44474e",
+        "hazard-orange": "#FF6D00",
+        "success-green": "#00E87A",
+        "terminal-black": "#000000",
+        "breakpoint-red": "#FF0000",
+        "data-glow": "rgba(0, 229, 255, 0.2)",
+        "success-glow": "rgba(0, 232, 122, 0.2)",
+
+        // Chrono namespace support
+        "chrono": {
+          "bg-base": "#0f131c",
+          "bg-surface": "#0f131c",
+          "surface": "#0f131c",
+          "surface-container": "#1c2029",
+          "accent-primary": "#00E5FF",
+          "success-green": "#00E87A",
+          "hazard-orange": "#FF6D00",
+        }
+      },
+      borderRadius: {
+        "DEFAULT": "0.125rem",
+        "lg": "0.25rem",
+        "xl": "0.5rem",
+        "full": "0.75rem"
+      },
+      spacing: {
+        "sidebar-width": "240px",
+        "sidebar-collapsed": "64px",
+        "header-height": "56px",
+        "panel-gap": "1px",
+        "container-padding": "1rem",
+        "footer-height": "28px",
+        "gutter-sm": "0.75rem"
+      },
+      fontFamily: {
+        "status-label": ["JetBrains Mono"],
+        "nav-item": ["Hanken Grotesk"],
+        "data-hex": ["JetBrains Mono"],
+        "code-editor": ["JetBrains Mono"],
+        "headline-lg": ["Hanken Grotesk"],
+        "body-md": ["Hanken Grotesk"],
+        "value-tag": ["JetBrains Mono"],
+        "headline-sm": ["Hanken Grotesk"]
+      },
+      fontSize: {
+        "status-label": ["11px", { lineHeight: "14px", fontWeight: "700" }],
+        "nav-item": ["14px", { lineHeight: "20px", letterSpacing: "0.02em", fontWeight: "500" }],
+        "data-hex": ["12px", { lineHeight: "16px", letterSpacing: "0.05em", fontWeight: "600" }],
+        "code-editor": ["13px", { lineHeight: "20px", fontWeight: "400" }],
+        "headline-lg": ["24px", { lineHeight: "32px", fontWeight: "700" }],
+        "body-md": ["14px", { lineHeight: "22px", fontWeight: "400" }],
+        "value-tag": ["10px", { lineHeight: "12px", fontWeight: "600" }],
+        "headline-sm": ["18px", { lineHeight: "24px", fontWeight: "600" }]
+      }
+    },
+  },
+  plugins: [],
+}

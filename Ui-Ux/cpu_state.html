@@ -1,0 +1,565 @@
+<!DOCTYPE html><html class="dark" lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>ChronoCore | CPU State</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<style>
+        @keyframes success-pulse {
+            0% { background-color: rgba(0, 232, 122, 0); }
+            20% { background-color: rgba(0, 232, 122, 0.25); }
+            100% { background-color: rgba(0, 232, 122, 0); }
+        }
+        .register-update {
+            animation: success-pulse 1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #0a0e17;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #3b494c;
+            border-radius: 2px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #00e5ff;
+        }
+        .glass-panel {
+            background: rgba(28, 32, 41, 0.6);
+            backdrop-filter: blur(8px);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline": "#849396",
+                        "data-glow": "rgba(0, 229, 255, 0.2)",
+                        "on-primary-container": "#00626e",
+                        "primary": "#c3f5ff",
+                        "error-container": "#93000a",
+                        "secondary-container": "#3e4759",
+                        "secondary": "#bdc7dc",
+                        "inverse-on-surface": "#2c303a",
+                        "tertiary": "#ebecf5",
+                        "tertiary-fixed-dim": "#c4c6cf",
+                        "on-surface": "#dfe2ef",
+                        "inverse-surface": "#dfe2ef",
+                        "on-secondary-container": "#acb5ca",
+                        "on-primary": "#00363d",
+                        "tertiary-fixed": "#e1e2eb",
+                        "secondary-fixed": "#dae2f9",
+                        "on-background": "#dfe2ef",
+                        "primary-fixed-dim": "#00daf3",
+                        "on-error": "#690005",
+                        "on-tertiary-container": "#565960",
+                        "on-secondary": "#283141",
+                        "surface-variant": "#31353f",
+                        "surface-container-lowest": "#0a0e17",
+                        "background": "#0f131c",
+                        "surface-tint": "#00daf3",
+                        "on-primary-fixed": "#001f24",
+                        "primary-fixed": "#9cf0ff",
+                        "surface-container": "#1c2029",
+                        "on-tertiary-fixed": "#191c22",
+                        "surface-container-high": "#262a33",
+                        "surface-dim": "#0f131c",
+                        "secondary-fixed-dim": "#bdc7dc",
+                        "breakpoint-red": "#FF0000",
+                        "on-tertiary-fixed-variant": "#44474e",
+                        "on-tertiary": "#2d3037",
+                        "on-primary-fixed-variant": "#004f58",
+                        "on-secondary-fixed": "#121c2c",
+                        "success-glow": "rgba(0, 232, 122, 0.2)",
+                        "outline-variant": "#3b494c",
+                        "surface-container-highest": "#31353f",
+                        "on-surface-variant": "#bac9cc",
+                        "error": "#ffb4ab",
+                        "surface-container-low": "#181c25",
+                        "surface-bright": "#353943",
+                        "on-error-container": "#ffdad6",
+                        "tertiary-container": "#ced0d9",
+                        "terminal-black": "#000000",
+                        "on-secondary-fixed-variant": "#3e4759",
+                        "surface": "#0f131c",
+                        "success-green": "#00E87A",
+                        "hazard-orange": "#FF6D00",
+                        "primary-container": "#00e5ff",
+                        "inverse-primary": "#006875"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "panel-gap": "1px",
+                        "gutter-sm": "0.75rem",
+                        "header-height": "56px",
+                        "sidebar-collapsed": "64px",
+                        "sidebar-width": "240px",
+                        "footer-height": "28px",
+                        "container-padding": "1rem"
+                    },
+                    "fontFamily": {
+                        "nav-item": ["Hanken Grotesk"],
+                        "headline-sm": ["Hanken Grotesk"],
+                        "body-md": ["Hanken Grotesk"],
+                        "headline-lg": ["Hanken Grotesk"],
+                        "data-hex": ["JetBrains Mono"],
+                        "code-editor": ["JetBrains Mono"],
+                        "status-label": ["JetBrains Mono"],
+                        "value-tag": ["JetBrains Mono"]
+                    },
+                    "fontSize": {
+                        "nav-item": ["14px", {"lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                        "headline-sm": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                        "body-md": ["14px", {"lineHeight": "22px", "fontWeight": "400"}],
+                        "headline-lg": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                        "data-hex": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "code-editor": ["13px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "status-label": ["11px", {"lineHeight": "14px", "fontWeight": "700"}],
+                        "value-tag": ["10px", {"lineHeight": "12px", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface font-body-md selection:bg-primary-container selection:text-on-primary">
+<!-- TopNavBar Shell -->
+<header class="bg-surface-container flex justify-between items-center px-gutter-sm w-full h-header-height fixed top-0 z-50 border-b border-outline-variant">
+<div class="flex items-center gap-6">
+<h1 class="font-headline-lg text-headline-lg font-bold text-on-surface">ChronoCore</h1>
+<div class="relative group">
+  <button class="flex items-center gap-2 px-3 py-1.5 bg-surface-container-lowest border border-primary-container rounded text-primary-container font-nav-item text-nav-item hover:bg-primary-container/10 transition-colors">
+    <span class="material-symbols-outlined text-[18px]">account_tree</span>
+    <span class="font-bold uppercase tracking-wider">Pipeline</span>
+    <span class="material-symbols-outlined text-[18px] group-hover:rotate-180 transition-transform">expand_more</span>
+  </button>
+  <div class="absolute top-full left-0 mt-1 w-48 bg-surface-container-high border border-outline-variant rounded shadow-lg hidden group-hover:block z-50">
+    <a href="#" class="block px-4 py-2 text-on-surface-variant hover:bg-surface-variant hover:text-primary-container font-nav-item text-nav-item transition-colors border-b border-outline-variant/30">Single-Cycle</a>
+    <a href="#" class="block px-4 py-2 text-on-surface-variant hover:bg-surface-variant hover:text-primary-container font-nav-item text-nav-item transition-colors border-b border-outline-variant/30">Multi-Cycle</a>
+    <a href="#" class="block px-4 py-2 bg-primary-container/10 text-primary-container font-bold font-nav-item text-nav-item">Pipeline</a>
+  </div>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="w-8 h-8 flex items-center justify-center text-on-surface-variant hover:text-primary-container transition-colors"><span class="material-symbols-outlined">settings_backup_restore</span></button>
+<button class="w-8 h-8 flex items-center justify-center text-on-surface-variant hover:text-primary-container transition-colors"><span class="material-symbols-outlined">arrow_back</span></button>
+<button class="w-8 h-8 flex items-center justify-center text-on-surface-variant hover:text-primary-container transition-colors"><span class="material-symbols-outlined">stop</span></button>
+<button class="w-8 h-8 flex items-center justify-center bg-primary-container text-on-primary-container rounded px-3 py-1 flex items-center gap-1 hover:brightness-110 transition-all font-nav-item text-nav-item">
+<span class="material-symbols-outlined text-[18px]">play_arrow</span>
+<span class="">RUN</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center text-on-surface-variant hover:text-primary-container transition-colors"><span class="material-symbols-outlined">arrow_forward</span></button>
+</div>
+</header>
+<!-- SideNavBar Shell -->
+<aside class="flex flex-col h-full w-sidebar-width fixed left-0 top-header-height z-40 bg-surface-container-low border-r border-outline-variant">
+<div class="p-4 flex items-center gap-3">
+<div class="w-10 h-10 bg-primary-container flex items-center justify-center rounded-lg">
+<span class="material-symbols-outlined text-on-primary-container">memory</span>
+</div>
+<div>
+<p class="font-headline-sm text-headline-sm text-primary-container leading-none">Simulation</p>
+<p class="font-status-label text-status-label text-on-surface-variant opacity-60">v4.2.0-Alpha</p>
+</div>
+</div>
+<nav class="mt-4 flex flex-col">
+<a class="text-on-surface-variant py-3 px-4 hover:bg-surface-variant hover:text-on-surface transition-all flex items-center gap-3 font-nav-item text-nav-item" href="#">
+<span class="material-symbols-outlined">code</span>
+<span class="">Editor</span>
+</a>
+<a class="border-l-4 border-primary-container bg-surface-container-high text-primary-container py-3 px-4 transition-all flex items-center gap-3 font-nav-item text-nav-item" href="#">
+<span class="material-symbols-outlined">memory</span>
+<span class="">CPU State</span>
+</a>
+<a class="text-on-surface-variant py-3 px-4 hover:bg-surface-variant hover:text-on-surface transition-all flex items-center gap-3 font-nav-item text-nav-item" href="#">
+<span class="material-symbols-outlined">storage</span>
+<span class="">Memory</span>
+</a>
+<a class="text-on-surface-variant py-3 px-4 hover:bg-surface-variant hover:text-on-surface transition-all flex items-center gap-3 font-nav-item text-nav-item" href="#">
+<span class="material-symbols-outlined">account_tree</span>
+<span class="">Datapath</span>
+</a>
+<a class="text-on-surface-variant py-3 px-4 hover:bg-surface-variant hover:text-on-surface transition-all flex items-center gap-3 font-nav-item text-nav-item" href="#">
+<span class="material-symbols-outlined">reorder</span>
+<span class="">Pipeline</span>
+</a>
+<a class="text-on-surface-variant py-3 px-4 hover:bg-surface-variant hover:text-on-surface transition-all flex items-center gap-3 font-nav-item text-nav-item" href="#">
+<span class="material-symbols-outlined">settings_input_component</span>
+<span class="">Processor</span>
+</a>
+</nav>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-sidebar-width mt-header-height mb-footer-height p-gutter-sm flex gap-panel-gap bg-secondary-container min-h-[calc(100vh-header-height-footer-height)]">
+<!-- Left: Register Grid -->
+<section class="flex-[3] bg-surface p-4 flex flex-col gap-4 overflow-hidden">
+<div class="flex justify-between items-end border-b border-outline-variant pb-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-container">list_alt</span>
+<h2 class="font-headline-sm text-headline-sm uppercase tracking-wider">Register File</h2>
+</div>
+<span class="font-status-label text-status-label text-on-surface-variant">ISA: RV32I | 32 GPRs</span>
+</div>
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-2 flex-grow overflow-y-auto custom-scrollbar pr-2">
+<!-- Register Items generated by JS below -->
+<div class="contents" id="register-container">
+<!-- Script will populate -->
+<div class="border border-outline-variant p-2 flex flex-col gap-1 hover:border-primary-container/50 transition-colors cursor-pointer group relative overflow-hidden">
+                <div class="flex justify-between items-center opacity-60 group-hover:opacity-100">
+                    <span class="font-status-label text-status-label text-primary-container">x0</span>
+                    <span class="font-status-label text-status-label text-on-surface-variant">zero</span>
+                </div>
+                <span class="font-data-hex text-data-hex text-on-surface">0xD18C0040</span>
+            </div><div class="border border-outline-variant p-2 flex flex-col gap-1 hover:border-primary-container/50 transition-colors cursor-pointer group relative overflow-hidden register-update">
+                <div class="flex justify-between items-center opacity-60 group-hover:opacity-100">
+                    <span class="font-status-label text-status-label text-primary-container">x1</span>
+                    <span class="font-status-label text-status-label text-on-surface-variant">ra</span>
+                </div>
+                <span class="font-data-hex text-data-hex text-on-surface">0x5A959480</span>
+            </div><div class="border border-outline-variant p-2 flex flex-col gap-1 hover:border-primary-container/50 transition-colors cursor-pointer group relative overflow-hidden register-update">
+                <div class="flex justify-between items-center opacity-60 group-hover:opacity-100">
+                    <span class="font-status-label text-status-label text-primary-container">x2</span>
+                    <span class="font-status-label text-status-label text-on-surface-variant">sp</span>
+                </div>
+                <span class="font-data-hex text-data-hex text-on-surface">0x15AA08D7</span>
+            </div><div class="border border-outline-variant p-2 flex flex-col gap-1 hover:border-primary-container/50 transition-colors cursor-pointer group relative overflow-hidden register-update">
+                <div class="flex justify-between items-center opacity-60 group-hover:opacity-100">
+                    <span class="font-status-label text-status-label text-primary-container">x3</span>
+                    <span class="font-status-label text-status-label text-on-surface-variant">gp</span>
+                </div>
+                <span class="font-data-hex text-data-hex text-on-surface text-success-green">0x61A60E0D</span>
+            </div><div class="border border-outline-variant p-2 flex flex-col gap-1 hover:border-primary-container/50 transition-colors cursor-pointer group relative overflow-hidden register-update">
+                <div class="flex justify-between items-center opacity-60 group-hover:opacity-100">
+                    <span class="font-status-label text-status-label text-primary-container">x4</span>
+                    <span class="font-status-label text-status-label text-on-surface-variant">tp</span>
+                </div>
+                <span class="font-data-hex text-data-hex text-on-surface">0x8F75A878</span>
+            </div><div class="border border-outline-variant p-2 flex flex-col gap-1 hover:border-primary-container/50 transition-colors cursor-pointer group relative overflow-hidden register-update">
+                <div class="flex justify-between items-center opacity-60 group-hover:opacity-100">
+                    <span class="font-status-label text-status-label text-primary-container">x5</span>
+                    <span class="font-status-label text-status-label text-on-surface-variant">t0</span>
+                </div>
+                <span class="font-data-hex text-data-hex text-on-surface">0x1B4AED0B</span>
+            </div><div class="border border-outline-variant p-2 flex flex-col gap-1 hover:border-primary-container/50 transition-colors cursor-pointer group relative overflow-hidden register-update">
+                <div class="flex justify-between items-center opacity-60 group-hover:opacity-100">
+                    <span class="font-status-label text-status-label text-primary-container">x6</span>
+                    <span class="font-status-label text-status-label text-on-surface-variant">t1</span>
+                </div>
+                <span class="font-data-hex text-data-hex text-on-surface">0xA61012CB</span>
+            </div><div class="border border-outline-variant p-2 flex flex-col gap-1 hover:border-primary-container/50 transition-colors cursor-pointer group relative overflow-hidden register-update">
+                <div class="flex justify-between items-center opacity-60 group-hover:opacity-100">
+                    <span class="font-status-label text-status-label text-primary-container">x7</span>
+                    <span class="font-status-label text-status-label text-on-surface-variant">t2</span>
+                </div>
+                <span class="font-data-hex text-data-hex text-on-surface">0xA4E469D1</span>
+            </div><div class="border border-outline-variant p-2 flex flex-col gap-1 hover:border-primary-container/50 transition-colors cursor-pointer group relative overflow-hidden register-update">
+                <div class="flex justify-between items-center opacity-60 group-hover:opacity-100">
+                    <span class="font-status-label text-status-label text-primary-container">x8</span>
+                    <span class="font-status-label text-status-label text-on-surface-variant">s0</span>
+                </div>
+                <span class="font-data-hex text-data-hex text-on-surface">0x2C618183</span>
+            </div><div class="border border-outline-variant p-2 flex flex-col gap-1 hover:border-primary-container/50 transition-colors cursor-pointer group relative overflow-hidden register-update">
+                <div class="flex justify-between items-center opacity-60 group-hover:opacity-100">
+                    <span class="font-status-label text-status-label text-primary-container">x9</span>
+                    <span class="font-status-label text-status-label text-on-surface-variant">s1</span>
+                </div>
+                <span class="font-data-hex text-data-hex text-on-surface">0x67F8C2C0</span>
+            </div><div class="border border-outline-variant p-2 flex flex-col gap-1 hover:border-primary-container/50 transition-colors cursor-pointer group relative overflow-hidden register-update">
+                <div class="flex justify-between items-center opacity-60 group-hover:opacity-100">
+                    <span class="font-status-label text-status-label text-primary-container">x10</span>
+                    <span class="font-status-label text-status-label text-on-surface-variant">a0</span>
+                </div>
+                <span class="font-data-hex text-data-hex text-on-surface">0x78EF09A1</span>
+            </div><div class="border border-outline-variant p-2 flex flex-col gap-1 hover:border-primary-container/50 transition-colors cursor-pointer group relative overflow-hidden register-update">
+                <div class="flex justify-between items-center opacity-60 group-hover:opacity-100">
+                    <span class="font-status-label text-status-label text-primary-container">x11</span>
+                    <span class="font-status-label text-status-label text-on-surface-variant">a1</span>
+                </div>
+                <span class="font-data-hex text-data-hex text-on-surface">0x0513C2E0</span>
+            </div><div class="border border-outline-variant p-2 flex flex-col gap-1 hover:border-primary-container/50 transition-colors cursor-pointer group relative overflow-hidden register-update">
+                <div class="flex justify-between items-center opacity-60 group-hover:opacity-100">
+                    <span class="font-status-label text-status-label text-primary-container">x12</span>
+                    <span class="font-status-label text-status-label text-on-surface-variant">a2</span>
+                </div>
+                <span class="font-data-hex text-data-hex text-on-surface">0xC4483C71</span>
+            </div><div class="border border-outline-variant p-2 flex flex-col gap-1 hover:border-primary-container/50 transition-colors cursor-pointer group relative overflow-hidden register-update">
+                <div class="flex justify-between items-center opacity-60 group-hover:opacity-100">
+                    <span class="font-status-label text-status-label text-primary-container">x13</span>
+                    <span class="font-status-label text-status-label text-on-surface-variant">a3</span>
+                </div>
+                <span class="font-data-hex text-data-hex text-on-surface">0xF63B61BA</span>
+            </div><div class="border border-outline-variant p-2 flex flex-col gap-1 hover:border-primary-container/50 transition-colors cursor-pointer group relative overflow-hidden register-update">
+                <div class="flex justify-between items-center opacity-60 group-hover:opacity-100">
+                    <span class="font-status-label text-status-label text-primary-container">x14</span>
+                    <span class="font-status-label text-status-label text-on-surface-variant">a4</span>
+                </div>
+                <span class="font-data-hex text-data-hex text-on-surface">0x97488F01</span>
+            </div><div class="border border-outline-variant p-2 flex flex-col gap-1 hover:border-primary-container/50 transition-colors cursor-pointer group relative overflow-hidden register-update">
+                <div class="flex justify-between items-center opacity-60 group-hover:opacity-100">
+                    <span class="font-status-label text-status-label text-primary-container">x15</span>
+                    <span class="font-status-label text-status-label text-on-surface-variant">a5</span>
+                </div>
+                <span class="font-data-hex text-data-hex text-on-surface">0x0DDD1560</span>
+            </div><div class="border border-outline-variant p-2 flex flex-col gap-1 hover:border-primary-container/50 transition-colors cursor-pointer group relative overflow-hidden register-update">
+                <div class="flex justify-between items-center opacity-60 group-hover:opacity-100">
+                    <span class="font-status-label text-status-label text-primary-container">x16</span>
+                    <span class="font-status-label text-status-label text-on-surface-variant">a6</span>
+                </div>
+                <span class="font-data-hex text-data-hex text-on-surface">0x0CF65A1C</span>
+            </div><div class="border border-outline-variant p-2 flex flex-col gap-1 hover:border-primary-container/50 transition-colors cursor-pointer group relative overflow-hidden register-update">
+                <div class="flex justify-between items-center opacity-60 group-hover:opacity-100">
+                    <span class="font-status-label text-status-label text-primary-container">x17</span>
+                    <span class="font-status-label text-status-label text-on-surface-variant">a7</span>
+                </div>
+                <span class="font-data-hex text-data-hex text-on-surface">0xAF41E143</span>
+            </div><div class="border border-outline-variant p-2 flex flex-col gap-1 hover:border-primary-container/50 transition-colors cursor-pointer group relative overflow-hidden register-update">
+                <div class="flex justify-between items-center opacity-60 group-hover:opacity-100">
+                    <span class="font-status-label text-status-label text-primary-container">x18</span>
+                    <span class="font-status-label text-status-label text-on-surface-variant">s2</span>
+                </div>
+                <span class="font-data-hex text-data-hex text-on-surface">0x5B5A7A60</span>
+            </div><div class="border border-outline-variant p-2 flex flex-col gap-1 hover:border-primary-container/50 transition-colors cursor-pointer group relative overflow-hidden register-update">
+                <div class="flex justify-between items-center opacity-60 group-hover:opacity-100">
+                    <span class="font-status-label text-status-label text-primary-container">x19</span>
+                    <span class="font-status-label text-status-label text-on-surface-variant">s3</span>
+                </div>
+                <span class="font-data-hex text-data-hex text-on-surface">0xFB2BCB68</span>
+            </div><div class="border border-outline-variant p-2 flex flex-col gap-1 hover:border-primary-container/50 transition-colors cursor-pointer group relative overflow-hidden register-update">
+                <div class="flex justify-between items-center opacity-60 group-hover:opacity-100">
+                    <span class="font-status-label text-status-label text-primary-container">x20</span>
+                    <span class="font-status-label text-status-label text-on-surface-variant">s4</span>
+                </div>
+                <span class="font-data-hex text-data-hex text-on-surface">0xDF0E2A82</span>
+            </div><div class="border border-outline-variant p-2 flex flex-col gap-1 hover:border-primary-container/50 transition-colors cursor-pointer group relative overflow-hidden register-update">
+                <div class="flex justify-between items-center opacity-60 group-hover:opacity-100">
+                    <span class="font-status-label text-status-label text-primary-container">x21</span>
+                    <span class="font-status-label text-status-label text-on-surface-variant">s5</span>
+                </div>
+                <span class="font-data-hex text-data-hex text-on-surface">0xA4FCB6E9</span>
+            </div><div class="border border-outline-variant p-2 flex flex-col gap-1 hover:border-primary-container/50 transition-colors cursor-pointer group relative overflow-hidden register-update">
+                <div class="flex justify-between items-center opacity-60 group-hover:opacity-100">
+                    <span class="font-status-label text-status-label text-primary-container">x22</span>
+                    <span class="font-status-label text-status-label text-on-surface-variant">s6</span>
+                </div>
+                <span class="font-data-hex text-data-hex text-on-surface">0xD66CF7CB</span>
+            </div><div class="border border-outline-variant p-2 flex flex-col gap-1 hover:border-primary-container/50 transition-colors cursor-pointer group relative overflow-hidden register-update">
+                <div class="flex justify-between items-center opacity-60 group-hover:opacity-100">
+                    <span class="font-status-label text-status-label text-primary-container">x23</span>
+                    <span class="font-status-label text-status-label text-on-surface-variant">s7</span>
+                </div>
+                <span class="font-data-hex text-data-hex text-on-surface">0xD5BE59FB</span>
+            </div><div class="border border-outline-variant p-2 flex flex-col gap-1 hover:border-primary-container/50 transition-colors cursor-pointer group relative overflow-hidden register-update">
+                <div class="flex justify-between items-center opacity-60 group-hover:opacity-100">
+                    <span class="font-status-label text-status-label text-primary-container">x24</span>
+                    <span class="font-status-label text-status-label text-on-surface-variant">s8</span>
+                </div>
+                <span class="font-data-hex text-data-hex text-on-surface">0x5D6A4837</span>
+            </div><div class="border border-outline-variant p-2 flex flex-col gap-1 hover:border-primary-container/50 transition-colors cursor-pointer group relative overflow-hidden register-update">
+                <div class="flex justify-between items-center opacity-60 group-hover:opacity-100">
+                    <span class="font-status-label text-status-label text-primary-container">x25</span>
+                    <span class="font-status-label text-status-label text-on-surface-variant">s9</span>
+                </div>
+                <span class="font-data-hex text-data-hex text-on-surface">0xD972511D</span>
+            </div><div class="border border-outline-variant p-2 flex flex-col gap-1 hover:border-primary-container/50 transition-colors cursor-pointer group relative overflow-hidden register-update">
+                <div class="flex justify-between items-center opacity-60 group-hover:opacity-100">
+                    <span class="font-status-label text-status-label text-primary-container">x26</span>
+                    <span class="font-status-label text-status-label text-on-surface-variant">s10</span>
+                </div>
+                <span class="font-data-hex text-data-hex text-on-surface">0x68D8E94D</span>
+            </div><div class="border border-outline-variant p-2 flex flex-col gap-1 hover:border-primary-container/50 transition-colors cursor-pointer group relative overflow-hidden register-update">
+                <div class="flex justify-between items-center opacity-60 group-hover:opacity-100">
+                    <span class="font-status-label text-status-label text-primary-container">x27</span>
+                    <span class="font-status-label text-status-label text-on-surface-variant">s11</span>
+                </div>
+                <span class="font-data-hex text-data-hex text-on-surface">0x7C962FA0</span>
+            </div><div class="border border-outline-variant p-2 flex flex-col gap-1 hover:border-primary-container/50 transition-colors cursor-pointer group relative overflow-hidden register-update">
+                <div class="flex justify-between items-center opacity-60 group-hover:opacity-100">
+                    <span class="font-status-label text-status-label text-primary-container">x28</span>
+                    <span class="font-status-label text-status-label text-on-surface-variant">t3</span>
+                </div>
+                <span class="font-data-hex text-data-hex text-on-surface">0xBEEE70B6</span>
+            </div><div class="border border-outline-variant p-2 flex flex-col gap-1 hover:border-primary-container/50 transition-colors cursor-pointer group relative overflow-hidden register-update">
+                <div class="flex justify-between items-center opacity-60 group-hover:opacity-100">
+                    <span class="font-status-label text-status-label text-primary-container">x29</span>
+                    <span class="font-status-label text-status-label text-on-surface-variant">t4</span>
+                </div>
+                <span class="font-data-hex text-data-hex text-on-surface">0x8EB5B71F</span>
+            </div><div class="border border-outline-variant p-2 flex flex-col gap-1 hover:border-primary-container/50 transition-colors cursor-pointer group relative overflow-hidden register-update">
+                <div class="flex justify-between items-center opacity-60 group-hover:opacity-100">
+                    <span class="font-status-label text-status-label text-primary-container">x30</span>
+                    <span class="font-status-label text-status-label text-on-surface-variant">t5</span>
+                </div>
+                <span class="font-data-hex text-data-hex text-on-surface">0xBF03BB2D</span>
+            </div><div class="border border-outline-variant p-2 flex flex-col gap-1 hover:border-primary-container/50 transition-colors cursor-pointer group relative overflow-hidden register-update">
+                <div class="flex justify-between items-center opacity-60 group-hover:opacity-100">
+                    <span class="font-status-label text-status-label text-primary-container">x31</span>
+                    <span class="font-status-label text-status-label text-on-surface-variant">t6</span>
+                </div>
+                <span class="font-data-hex text-data-hex text-on-surface">0xB08FA087</span>
+            </div></div>
+</div>
+</section>
+<!-- Right: PC & Control Signals -->
+<section class="flex-[2] flex flex-col gap-panel-gap">
+<!-- PC Module -->
+<div class="bg-surface-container-high p-4 flex flex-col gap-2 relative overflow-hidden">
+<div class="absolute top-0 right-0 p-2 opacity-10">
+<span class="material-symbols-outlined text-[64px]">schedule</span>
+</div>
+<div class="flex items-center gap-2">
+<p class="font-status-label text-status-label uppercase text-primary-container">Program Counter</p>
+</div>
+<div class="flex items-baseline gap-3 mt-1">
+<span class="font-data-hex text-[40px] text-on-surface font-bold tracking-tighter" id="pc-value">0x00400010</span>
+<span class="font-status-label text-status-label text-success-green animate-pulse">NEXT: 0x00400014</span>
+</div>
+</div>
+<!-- Control Signals Table -->
+<div class="bg-surface flex-grow p-4 flex flex-col gap-4">
+<div class="flex items-center gap-2 border-b border-outline-variant pb-2">
+<span class="material-symbols-outlined text-hazard-orange">settings_input_antenna</span>
+<h2 class="font-headline-sm text-headline-sm uppercase tracking-wider">Control Signals</h2>
+</div>
+<div class="flex-grow overflow-y-auto custom-scrollbar">
+<table class="w-full text-left font-data-hex text-data-hex">
+<thead>
+<tr class="text-on-surface-variant border-b border-outline-variant/30">
+<th class="py-2 font-status-label">SIGNAL</th>
+<th class="py-2 font-status-label text-right">VALUE</th>
+<th class="py-2 font-status-label text-center">BUS</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/10">
+<tr>
+<td class="py-3 text-on-surface">RegWrite</td>
+<td class="py-3 text-right text-success-green">HIGH (1)</td>
+<td class="py-3 text-center"><span class="w-2 h-2 rounded-full bg-success-green inline-block shadow-[0_0_8px_rgba(0,232,122,0.5)]"></span></td>
+</tr>
+<tr>
+<td class="py-3 text-on-surface">ALUSrc</td>
+<td class="py-3 text-right text-on-surface-variant">LOW (0)</td>
+<td class="py-3 text-center"><span class="w-2 h-2 rounded-full bg-surface-variant inline-block"></span></td>
+</tr>
+<tr>
+<td class="py-3 text-on-surface">MemRead</td>
+<td class="py-3 text-right text-on-surface-variant">LOW (0)</td>
+<td class="py-3 text-center"><span class="w-2 h-2 rounded-full bg-surface-variant inline-block"></span></td>
+</tr>
+<tr>
+<td class="py-3 text-on-surface">MemWrite</td>
+<td class="py-3 text-right text-on-surface-variant">LOW (0)</td>
+<td class="py-3 text-center"><span class="w-2 h-2 rounded-full bg-surface-variant inline-block"></span></td>
+</tr>
+<tr>
+<td class="py-3 text-on-surface">Branch</td>
+<td class="py-3 text-right text-hazard-orange">IDLE</td>
+<td class="py-3 text-center"><span class="w-2 h-2 rounded-full bg-hazard-orange/30 inline-block"></span></td>
+</tr>
+<tr>
+<td class="py-3 text-on-surface">ALUOp</td>
+<td class="py-3 text-right text-primary-container">0x2 (ADD)</td>
+<td class="py-3 text-center"><span class="w-2 h-2 rounded-full bg-primary-container inline-block shadow-[0_0_8px_rgba(0,229,255,0.4)]"></span></td>
+</tr>
+<tr>
+<td class="py-3 text-on-surface">MemToReg</td>
+<td class="py-3 text-right text-on-surface-variant">0</td>
+<td class="py-3 text-center"><span class="w-2 h-2 rounded-full bg-surface-variant inline-block"></span></td>
+</tr>
+<tr>
+<td class="py-3 text-on-surface">Jump</td>
+<td class="py-3 text-right text-on-surface-variant">0</td>
+<td class="py-3 text-center"><span class="w-2 h-2 rounded-full bg-surface-variant inline-block"></span></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="mt-auto border-t border-outline-variant pt-4">
+<div class="p-3 bg-surface-container-lowest border border-outline-variant/30 rounded flex items-start gap-3">
+<span class="material-symbols-outlined text-primary-container mt-0.5">info</span>
+<div>
+<p class="font-status-label text-status-label text-on-surface">CURRENT INSTRUCTION</p>
+<p class="font-code-editor text-code-editor text-primary-container mt-1">ADD x5, x10, x11</p>
+<p class="font-status-label text-status-label text-on-surface-variant opacity-60">0000 0000 1011 0101 0000 0010 1011 0011</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer Shell -->
+<footer class="fixed bottom-0 left-0 w-full z-50 flex justify-between items-center px-4 h-footer-height bg-surface-container-lowest border-t border-outline-variant"><div class="flex items-center gap-4">
+  <span class="font-status-label text-status-label text-on-surface-variant opacity-60">©2026 ChronoCore All Rights Reserved</span>
+  <div class="flex items-center gap-1">
+    <span class="w-2 h-2 rounded-full bg-success-green animate-pulse"></span>
+    <span class="font-status-label text-status-label text-success-green font-bold">SYSTEM ONLINE</span>
+  </div>
+</div>
+<div class="flex items-center gap-6">
+  <a href="#" class="font-status-label text-status-label text-on-surface-variant hover:text-primary-container transition-colors">GitHub</a>
+  <a href="#" class="font-status-label text-status-label text-on-surface-variant hover:text-primary-container transition-colors">Documentation</a>
+  <a href="#" class="font-status-label text-status-label text-on-surface-variant hover:text-primary-container transition-colors">Community</a>
+</div></footer>
+<script>
+        // Generate Registers
+        const container = document.getElementById('register-container');
+        const registers = Array.from({ length: 32 }, (_, i) => ({
+            name: `x${i}`,
+            alias: getAlias(i),
+            value: `0x${Math.floor(Math.random() * 0xFFFFFFFF).toString(16).padStart(8, '0').toUpperCase()}`
+        }));
+
+        function getAlias(i) {
+            const aliases = ['zero', 'ra', 'sp', 'gp', 'tp', 't0', 't1', 't2', 's0', 's1', 'a0', 'a1', 'a2', 'a3', 'a4', 'a5', 'a6', 'a7', 's2', 's3', 's4', 's5', 's6', 's7', 's8', 's9', 's10', 's11', 't3', 't4', 't5', 't6'];
+            return aliases[i] || '';
+        }
+
+        registers.forEach((reg, i) => {
+            const div = document.createElement('div');
+            div.className = `border border-outline-variant p-2 flex flex-col gap-1 hover:border-primary-container/50 transition-colors cursor-pointer group relative overflow-hidden`;
+            if (i === 5) div.classList.add('register-update'); // Mock update state
+            
+            div.innerHTML = `
+                <div class="flex justify-between items-center opacity-60 group-hover:opacity-100">
+                    <span class="font-status-label text-status-label text-primary-container">${reg.name}</span>
+                    <span class="font-status-label text-status-label text-on-surface-variant">${reg.alias}</span>
+                </div>
+                <span class="font-data-hex text-data-hex text-on-surface ${i === 5 ? 'text-success-green' : ''}">${reg.value}</span>
+            `;
+            container.appendChild(div);
+        });
+
+        // Simulate micro-updates
+        setInterval(() => {
+            const index = Math.floor(Math.random() * 32);
+            if (index === 0) return; // x0 is always 0
+            const regEl = container.children[index];
+            const valEl = regEl.querySelector('.font-data-hex');
+            
+            regEl.classList.remove('register-update');
+            void regEl.offsetWidth; // trigger reflow
+            regEl.classList.add('register-update');
+            
+            const newVal = `0x${Math.floor(Math.random() * 0xFFFFFFFF).toString(16).padStart(8, '0').toUpperCase()}`;
+            valEl.textContent = newVal;
+            valEl.classList.add('text-success-green');
+            
+            setTimeout(() => {
+                valEl.classList.remove('text-success-green');
+            }, 2000);
+        }, 3000);
+    </script>
+
+
+</body></html>

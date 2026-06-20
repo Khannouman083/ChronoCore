@@ -1,0 +1,363 @@
+<!DOCTYPE html><html class="dark" lang="en" style=""><head></head><body class="bg-[#090C12] text-on-surface selection:bg-primary-container selection:text-on-primary-container overflow-hidden"><svg class="inline-defs-container" aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden"></svg>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>ChronoCore | Pipeline Visualizer</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<style>
+        @keyframes pulse-success {
+            0%, 100% { background-color: rgba(0, 232, 122, 0.1); }
+            50% { background-color: rgba(0, 232, 122, 0.3); }
+        }
+        .animate-success-glow {
+            animation: pulse-success 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        .pipeline-lane {
+            background: linear-gradient(to bottom, rgba(28, 32, 41, 0.8), rgba(15, 19, 28, 0.9));
+            border-left: 1px solid rgba(132, 147, 150, 0.2);
+        }
+        .forwarding-path {
+            stroke-dasharray: 5;
+            animation: dash 10s linear infinite;
+        }
+        @keyframes dash {
+            to { stroke-dashoffset: -100; }
+        }
+        .glass-panel {
+            backdrop-filter: blur(8px);
+            background: rgba(20, 24, 33, 0.7);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline": "#849396",
+                        "data-glow": "rgba(0, 229, 255, 0.2)",
+                        "on-primary-container": "#00626e",
+                        "primary": "#c3f5ff",
+                        "error-container": "#93000a",
+                        "secondary-container": "#3e4759",
+                        "secondary": "#bdc7dc",
+                        "inverse-on-surface": "#2c303a",
+                        "tertiary": "#ebecf5",
+                        "tertiary-fixed-dim": "#c4c6cf",
+                        "on-surface": "#dfe2ef",
+                        "inverse-surface": "#dfe2ef",
+                        "on-secondary-container": "#acb5ca",
+                        "on-primary": "#00363d",
+                        "tertiary-fixed": "#e1e2eb",
+                        "secondary-fixed": "#dae2f9",
+                        "on-background": "#dfe2ef",
+                        "primary-fixed-dim": "#00daf3",
+                        "on-error": "#690005",
+                        "on-tertiary-container": "#565960",
+                        "on-secondary": "#283141",
+                        "surface-variant": "#31353f",
+                        "surface-container-lowest": "#0a0e17",
+                        "background": "#0f131c",
+                        "surface-tint": "#00daf3",
+                        "on-primary-fixed": "#001f24",
+                        "primary-fixed": "#9cf0ff",
+                        "surface-container": "#1c2029",
+                        "on-tertiary-fixed": "#191c22",
+                        "surface-container-high": "#262a33",
+                        "surface-dim": "#0f131c",
+                        "secondary-fixed-dim": "#bdc7dc",
+                        "breakpoint-red": "#FF0000",
+                        "on-tertiary-fixed-variant": "#44474e",
+                        "on-tertiary": "#2d3037",
+                        "on-primary-fixed-variant": "#004f58",
+                        "on-secondary-fixed": "#121c2c",
+                        "success-glow": "rgba(0, 232, 122, 0.2)",
+                        "outline-variant": "#3b494c",
+                        "surface-container-highest": "#31353f",
+                        "on-surface-variant": "#bac9cc",
+                        "error": "#ffb4ab",
+                        "surface-container-low": "#181c25",
+                        "surface-bright": "#353943",
+                        "on-error-container": "#ffdad6",
+                        "tertiary-container": "#ced0d9",
+                        "terminal-black": "#000000",
+                        "on-secondary-fixed-variant": "#3e4759",
+                        "surface": "#0f131c",
+                        "success-green": "#00E87A",
+                        "hazard-orange": "#FF6D00",
+                        "primary-container": "#00e5ff",
+                        "inverse-primary": "#006875"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "panel-gap": "1px",
+                        "gutter-sm": "0.75rem",
+                        "header-height": "56px",
+                        "sidebar-collapsed": "64px",
+                        "sidebar-width": "240px",
+                        "footer-height": "28px",
+                        "container-padding": "1rem"
+                    },
+                    "fontFamily": {
+                        "nav-item": ["Hanken Grotesk"],
+                        "headline-sm": ["Hanken Grotesk"],
+                        "body-md": ["Hanken Grotesk"],
+                        "headline-lg": ["Hanken Grotesk"],
+                        "data-hex": ["JetBrains Mono"],
+                        "code-editor": ["JetBrains Mono"],
+                        "status-label": ["JetBrains Mono"],
+                        "value-tag": ["JetBrains Mono"]
+                    },
+                    "fontSize": {
+                        "nav-item": ["14px", {"lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                        "headline-sm": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                        "body-md": ["14px", {"lineHeight": "22px", "fontWeight": "400"}],
+                        "headline-lg": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                        "data-hex": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "code-editor": ["13px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "status-label": ["11px", {"lineHeight": "14px", "fontWeight": "700"}],
+                        "value-tag": ["10px", {"lineHeight": "12px", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+
+
+<!-- TopNavBar -->
+<header class="fixed top-0 left-0 w-full z-50 bg-surface-container flex justify-between items-center px-gutter-sm h-header-height border-b border-outline-variant">
+<div class="flex items-center gap-8">
+<span class="font-headline-lg text-headline-lg font-bold text-on-surface">ChronoCore</span>
+<div class="relative group">
+  <button class="flex items-center gap-2 px-3 py-1.5 bg-surface-container-low border border-primary-container/30 rounded text-primary font-nav-item text-nav-item hover:border-primary-container transition-all">
+    <span class="font-bold">Pipeline</span>
+    <span class="material-symbols-outlined text-[18px]">expand_more</span>
+  </button>
+  <div class="absolute top-full left-0 mt-1 w-40 bg-surface-container-high border border-primary-container/30 rounded shadow-lg hidden group-hover:block z-50">
+    <a href="#" class="block px-4 py-2 text-on-surface-variant hover:bg-surface-variant hover:text-primary transition-colors font-nav-item text-nav-item">Single-Cycle</a>
+    <a href="#" class="block px-4 py-2 text-on-surface-variant hover:bg-surface-variant hover:text-primary transition-colors font-nav-item text-nav-item">Multi-Cycle</a>
+    <a href="#" class="block px-4 py-2 bg-primary-container/10 text-primary font-bold font-nav-item text-nav-item">Pipeline</a>
+  </div>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="w-8 h-8 flex items-center justify-center rounded hover:bg-surface-variant transition-all text-on-surface-variant" title="Reset Simulation">
+<span class="material-symbols-outlined">settings_backup_restore</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center rounded hover:bg-surface-variant transition-all text-on-surface-variant">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center rounded hover:bg-surface-variant transition-all text-on-surface-variant">
+<span class="material-symbols-outlined">stop</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg bg-primary-container text-on-primary-container hover:shadow-[0_0_15px_rgba(0,229,255,0.4)] transition-all">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center rounded hover:bg-surface-variant transition-all text-on-surface-variant">
+<span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+</header>
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-header-height h-[calc(100vh-header-height)] w-sidebar-width z-40 bg-surface-container-low flex flex-col border-r border-outline-variant">
+<div class="p-4 flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-primary-container/10 flex items-center justify-center text-primary-container">
+<span class="material-symbols-outlined">settings_input_component</span>
+</div>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-primary-container">Simulation</h2>
+<p class="font-status-label text-status-label text-on-surface-variant opacity-60">v4.2.0-Alpha</p>
+</div>
+</div>
+<nav class="flex-1 mt-4">
+<a class="flex items-center gap-3 text-on-surface-variant py-3 px-4 font-nav-item text-nav-item hover:bg-surface-variant hover:text-on-surface transition-all" href="#">
+<span class="material-symbols-outlined">code</span> Editor
+            </a>
+<a class="flex items-center gap-3 text-on-surface-variant py-3 px-4 font-nav-item text-nav-item hover:bg-surface-variant hover:text-on-surface transition-all" href="#">
+<span class="material-symbols-outlined">memory</span> CPU State
+            </a>
+<a class="flex items-center gap-3 text-on-surface-variant py-3 px-4 font-nav-item text-nav-item hover:bg-surface-variant hover:text-on-surface transition-all" href="#">
+<span class="material-symbols-outlined">storage</span> Memory
+            </a>
+<a class="flex items-center gap-3 text-on-surface-variant py-3 px-4 font-nav-item text-nav-item hover:bg-surface-variant hover:text-on-surface transition-all" href="#">
+<span class="material-symbols-outlined">account_tree</span> Datapath
+            </a>
+<a class="flex items-center gap-3 border-l-4 border-primary-container bg-surface-container-high text-primary-container py-3 px-4 font-nav-item text-nav-item" href="#">
+<span class="material-symbols-outlined">reorder</span> Pipeline
+            </a>
+<a class="flex items-center gap-3 text-on-surface-variant py-3 px-4 font-nav-item text-nav-item hover:bg-surface-variant hover:text-on-surface transition-all" href="#">
+<span class="material-symbols-outlined">settings_input_component</span> Processor
+            </a>
+</nav>
+</aside>
+<!-- Main Content -->
+<main class="fixed left-sidebar-width top-header-height w-[calc(100vw-sidebar-width)] h-[calc(100vh-header-height-footer-height)] p-0 flex flex-col overflow-hidden">
+<!-- Pipeline Control Bar -->
+<div class="h-10 bg-surface-container-highest flex items-center px-4 justify-between border-b border-outline-variant">
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-success-green animate-success-glow" style="opacity: 1;"></div>
+<span class="font-status-label text-status-label text-success-green uppercase tracking-widest">Pipeline Operational</span>
+</div>
+<div class="h-4 w-px bg-outline-variant"></div>
+<div class="flex items-center gap-2">
+<span class="font-status-label text-status-label text-hazard-orange">HAZARD DETECTED</span>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<span class="font-status-label text-status-label text-on-surface-variant">IPC: 0.84</span>
+<span class="font-status-label text-status-label text-on-surface-variant">STALLS: 12</span>
+</div>
+</div>
+<!-- Pipeline Lanes Canvas -->
+<div class="relative flex-1 flex overflow-hidden">
+<!-- SVG Overlay for Forwarding Paths -->
+<svg class="absolute inset-0 w-full h-full pointer-events-none z-20">
+<defs>
+<marker id="arrowhead" markerHeight="7" markerWidth="10" orient="auto" refX="0" refY="3.5">
+<polygon fill="#FF6D00" points="0 0, 10 3.5, 0 7"></polygon>
+</marker>
+</defs>
+<!-- MEM to EX Forwarding -->
+<path class="forwarding-path" d="M 840 320 Q 720 400 600 320" fill="none" marker-end="url(#arrowhead)" stroke="#FF6D00" stroke-width="2"></path>
+</svg>
+<!-- 5-Stage View -->
+<div class="grid grid-cols-5 w-full h-full relative">
+<!-- IF: Instruction Fetch -->
+<div class="pipeline-lane flex flex-col items-center pt-8 relative">
+<div class="font-status-label text-status-label text-primary-container mb-6 border border-primary-container/30 px-3 py-1 rounded bg-primary-container/5">IF: FETCH</div>
+<div class="flex flex-col gap-4 w-full px-4 items-center">
+<div class="w-full bg-surface-container-high border border-outline-variant rounded-lg p-3 glass-panel group hover:border-primary-container transition-all">
+<p class="font-code-editor text-code-editor text-primary mb-1">0x00400010</p>
+<p class="font-code-editor text-code-editor text-on-surface">addi x3, x1, 100</p>
+</div>
+<div class="w-full opacity-30 bg-surface-container-high border border-outline-variant rounded-lg p-3">
+<p class="font-code-editor text-code-editor">0x00400014</p>
+<p class="font-code-editor text-code-editor">lw x1, 0(x5)</p>
+</div>
+</div>
+</div>
+<!-- ID: Instruction Decode -->
+<div class="pipeline-lane flex flex-col items-center pt-8 relative bg-surface-container-high/20">
+<div class="font-status-label text-status-label text-primary-container mb-6 border border-primary-container/30 px-3 py-1 rounded bg-primary-container/5">ID: DECODE</div>
+<div class="flex flex-col gap-4 w-full px-4 items-center">
+<!-- Hazard Zone -->
+<div class="relative w-full">
+<div class="w-full bg-surface-container-high border-2 border-hazard-orange rounded-lg p-3 glass-panel shadow-[0_0_15px_rgba(255,109,0,0.1)]">
+<p class="font-code-editor text-code-editor text-hazard-orange mb-1">0x0040000C</p>
+<p class="font-code-editor text-code-editor text-on-surface">lw x1, 0(x5)</p>
+</div>
+<div class="absolute -top-3 -right-3 bg-hazard-orange text-terminal-black font-status-label text-[9px] px-2 py-0.5 rounded-full font-bold shadow-lg animate-pulse">STALL</div>
+<div class="mt-2 p-2 rounded bg-hazard-orange/10 border border-hazard-orange/20">
+<p class="text-[10px] font-status-label text-hazard-orange leading-tight">Data Hazard: x1 depends on MEM stage</p>
+</div>
+</div>
+</div>
+</div>
+<!-- EX: Execute -->
+<div class="pipeline-lane flex flex-col items-center pt-8 relative">
+<div class="font-status-label text-status-label text-primary-container mb-6 border border-primary-container/30 px-3 py-1 rounded bg-primary-container/5">EX: EXECUTE</div>
+<div class="flex flex-col gap-4 w-full px-4 items-center">
+<div class="w-full bg-surface-container-high border border-primary-container rounded-lg p-3 glass-panel shadow-[0_0_20px_rgba(0,229,255,0.1)]">
+<div class="flex justify-between items-start mb-1">
+<p class="font-code-editor text-code-editor text-primary">0x00400008</p>
+<span class="bg-primary/20 text-primary-container text-[8px] px-1 rounded">ALU</span>
+</div>
+<p class="font-code-editor text-code-editor text-on-surface">sub x10, x2, x4</p>
+<div class="mt-3 pt-2 border-t border-outline-variant/30 grid grid-cols-2 gap-2">
+<div>
+<p class="text-[9px] font-status-label text-on-surface-variant">OP A</p>
+<p class="font-data-hex text-data-hex text-primary">0000000F</p>
+</div>
+<div>
+<p class="text-[9px] font-status-label text-on-surface-variant">OP B</p>
+<p class="font-data-hex text-data-hex text-primary">00000004</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- MEM: Memory -->
+<div class="pipeline-lane flex flex-col items-center pt-8 relative">
+<div class="font-status-label text-status-label text-primary-container mb-6 border border-primary-container/30 px-3 py-1 rounded bg-primary-container/5">MEM: ACCESS</div>
+<div class="flex flex-col gap-4 w-full px-4 items-center">
+<div class="w-full bg-surface-container-high border border-outline-variant rounded-lg p-3 glass-panel">
+<p class="font-code-editor text-code-editor text-primary mb-1">0x00400004</p>
+<p class="font-code-editor text-code-editor text-on-surface">sw x4, 4(x2)</p>
+<div class="mt-3 pt-2 border-t border-outline-variant/30">
+<p class="text-[9px] font-status-label text-on-surface-variant">MEM ADDR</p>
+<p class="font-data-hex text-data-hex text-success-green">0x10010004</p>
+</div>
+</div>
+</div>
+</div>
+<!-- WB: Write Back -->
+<div class="pipeline-lane flex flex-col items-center pt-8 relative">
+<div class="font-status-label text-status-label text-primary-container mb-6 border border-primary-container/30 px-3 py-1 rounded bg-primary-container/5">WB: COMMIT</div>
+<div class="flex flex-col gap-4 w-full px-4 items-center">
+<div class="w-full bg-surface-container-high border border-outline-variant rounded-lg p-3 glass-panel">
+<p class="font-code-editor text-code-editor text-primary mb-1">0x00400000</p>
+<p class="font-code-editor text-code-editor text-on-surface">addi x1, x0, 5</p>
+<div class="mt-3 pt-2 border-t border-outline-variant/30 flex justify-between items-center">
+<div>
+<p class="text-[9px] font-status-label text-on-surface-variant">REG</p>
+<p class="font-data-hex text-data-hex">x1</p>
+</div>
+<div class="text-right">
+<p class="text-[9px] font-status-label text-on-surface-variant">VAL</p>
+<p class="font-data-hex text-data-hex text-primary">00000005</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="fixed bottom-0 left-0 w-full z-50 bg-surface-container-lowest flex justify-between items-center px-4 h-footer-height border-t border-outline-variant"><div class="flex items-center gap-4">
+  <span class="font-status-label text-status-label text-on-surface-variant uppercase tracking-tighter">@2026 ChronoCore All Rights Reserved</span>
+  <div class="h-3 w-px bg-outline-variant"></div>
+  <div class="flex items-center gap-2">
+    <div class="w-2 h-2 rounded-full bg-success-green shadow-[0_0_5px_#00E87A]"></div>
+    <span class="font-status-label text-status-label text-success-green font-bold">SYSTEM ONLINE</span>
+  </div>
+</div>
+<div class="flex items-center gap-6">
+  <a href="#" class="font-status-label text-status-label text-on-surface-variant hover:text-primary transition-colors">GitHub</a>
+  <a href="#" class="font-status-label text-status-label text-on-surface-variant hover:text-primary transition-colors">Documentation</a>
+  <a href="#" class="font-status-label text-status-label text-on-surface-variant hover:text-primary transition-colors">Community</a>
+</div></footer>
+<script>
+        // Simple visual interaction for hover effects
+        document.querySelectorAll('.glass-panel').forEach(panel => {
+            panel.addEventListener('mouseenter', () => {
+                panel.classList.add('translate-x-1');
+            });
+            panel.addEventListener('mouseleave', () => {
+                panel.classList.remove('translate-x-1');
+            });
+        });
+
+        // Simulating some dynamic behavior
+        const statusLED = document.querySelector('.animate-success-glow');
+        setInterval(() => {
+            statusLED.style.opacity = statusLED.style.opacity === '0.5' ? '1' : '0.5';
+        }, 1000);
+    </script>
+
+
+
+
+
+
+</body></html>

@@ -1,0 +1,298 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom Scrollbars for technical panels */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: #0a0e17;
+}
+::-webkit-scrollbar-thumb {
+  background: #3b494c;
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #00e5ff;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #0a0e17;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #3b494c;
+  border-radius: 2px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #00e5ff;
+}
+
+/* Animations and Transitions */
+.fade-in-up {
+  animation: fadeInUp 0.8s ease-out forwards;
+  opacity: 0;
+  transform: translateY(20px);
+}
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.delay-100 { animation-delay: 100ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+
+.glow-hover:hover {
+  box-shadow: 0 0 15px rgba(0, 229, 255, 0.5);
+}
+.text-glow {
+  text-shadow: 0 0 20px rgba(223, 226, 239, 0.3);
+}
+
+.scanlines {
+  background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.1));
+  background-size: 100% 4px;
+}
+
+/* Success Pulse for running states */
+@keyframes pulse-success {
+  0% { box-shadow: 0 0 0 0 rgba(0, 232, 122, 0.4); }
+  70% { box-shadow: 0 0 0 6px rgba(0, 232, 122, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(0, 232, 122, 0); }
+}
+.pulse-running {
+  animation: pulse-success 2s infinite;
+}
+
+.animate-success-glow {
+  animation: success-pulse-bg 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+@keyframes success-pulse-bg {
+  0%, 100% { background-color: rgba(0, 232, 122, 0.1); }
+  50% { background-color: rgba(0, 232, 122, 0.3); }
+}
+
+/* Terminal blink cursor */
+.cursor-blink {
+  animation: blink 1s step-end infinite;
+}
+@keyframes blink {
+  from, to { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* Active code editor line */
+.code-line-active {
+  background: rgba(0, 229, 255, 0.05);
+  border-left: 2px solid #00e5ff;
+}
+
+/* Register updates green flash animation */
+@keyframes success-pulse {
+  0% { background-color: rgba(0, 232, 122, 0); }
+  20% { background-color: rgba(0, 232, 122, 0.25); }
+  100% { background-color: rgba(0, 232, 122, 0); }
+}
+.register-update {
+  animation: success-pulse 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-panel {
+  background: rgba(28, 32, 41, 0.6);
+  backdrop-filter: blur(8px);
+}
+
+/* Datapath Styling */
+.datapath-grid {
+  background-image: 
+    linear-gradient(to right, rgba(132, 147, 150, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(132, 147, 150, 0.05) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+.scanline {
+  width: 100%;
+  height: 100px;
+  z-index: 10;
+  background: linear-gradient(0deg, rgba(0, 229, 255, 0) 0%, rgba(0, 229, 255, 0.03) 50%, rgba(0, 229, 255, 0) 100%);
+  opacity: 0.1;
+  position: absolute;
+  pointer-events: none;
+  animation: scanlineMove 8s linear infinite;
+}
+@keyframes scanlineMove {
+  0% { top: -100px; }
+  100% { top: 100%; }
+}
+
+.glass-overlay {
+  background: rgba(15, 19, 28, 0.8);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(132, 147, 150, 0.2);
+}
+
+.data-bus {
+  fill: none;
+  stroke: #3b494c;
+  stroke-width: 4;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  transition: stroke 0.3s, filter 0.3s;
+}
+
+.data-bus.active {
+  stroke: #00e5ff;
+  filter: drop-shadow(0 0 4px rgba(0, 229, 255, 0.6));
+}
+
+.control-wire {
+  fill: none;
+  stroke: #3b494c;
+  stroke-width: 1.5;
+  stroke-dasharray: 4 4;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  transition: stroke 0.3s;
+}
+
+.control-wire.active {
+  stroke: #FF6D00;
+  filter: drop-shadow(0 0 2px rgba(255, 109, 0, 0.5));
+}
+
+.particle {
+  fill: #00e5ff;
+  filter: drop-shadow(0 0 3px #00e5ff);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.particle.active {
+  opacity: 1;
+}
+
+.control-particle {
+  fill: #FF6D00;
+  filter: drop-shadow(0 0 2px #FF6D00);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.control-particle.active {
+  opacity: 1;
+}
+
+.component-box {
+  fill: #0f131c;
+  stroke: #3b494c;
+  stroke-width: 1.5;
+  transition: all 0.3s ease;
+}
+
+.component-box.hovered, .component-box:hover {
+  stroke: #00e5ff;
+  fill: #1c2029;
+  filter: drop-shadow(0 0 8px rgba(0, 229, 255, 0.3));
+}
+
+.component-box-alu {
+  fill: #181c25;
+  stroke: #FF6D00;
+  stroke-width: 1.5;
+  transition: all 0.3s ease;
+}
+
+.component-box-alu.hovered, .component-box-alu:hover {
+  fill: #1c2029;
+  filter: drop-shadow(0 0 8px rgba(255, 109, 0, 0.3));
+}
+
+.alu-active {
+  fill: rgba(255, 109, 0, 0.1);
+  stroke: #FF6D00;
+  animation: aluPulse 2s infinite alternate;
+}
+
+@keyframes aluPulse {
+  0% { filter: drop-shadow(0 0 2px rgba(255, 109, 0, 0.5)); }
+  100% { filter: drop-shadow(0 0 10px rgba(255, 109, 0, 0.8)); }
+}
+
+.hex-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  fill: #00e5ff;
+  font-weight: 600;
+  text-shadow: 0 0 4px rgba(0, 229, 255, 0.5);
+}
+
+.val-bg {
+  fill: rgba(15, 19, 28, 0.8);
+  stroke: #3b494c;
+  stroke-width: 1;
+  rx: 2;
+}
+
+.component-label {
+  font-family: 'Hanken Grotesk', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  fill: #dfe2ef;
+  letter-spacing: 0.05em;
+  transition: fill 0.3s;
+}
+
+.port-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8px;
+  fill: #bac9cc;
+}
+
+/* Pipeline Lane Styling */
+.pipeline-lane {
+  background: linear-gradient(to bottom, rgba(28, 32, 41, 0.8), rgba(15, 19, 28, 0.9));
+  border-left: 1px solid rgba(132, 147, 150, 0.2);
+}
+
+.forwarding-path {
+  stroke-dasharray: 5;
+  animation: dash 10s linear infinite;
+}
+@keyframes dash {
+  to { stroke-dashoffset: -100; }
+}
+
+/* Processor Block unit states */
+.block-unit {
+  transition: all 0.3s ease;
+}
+.glow-active {
+  box-shadow: 0 0 15px rgba(0, 232, 122, 0.15);
+  border-color: #00E87A !important;
+}
+
+.pipeline-stage-border {
+  border-right: 1px solid rgba(132, 147, 150, 0.1);
+}
+.pipeline-stage-border:last-child {
+  border-right: none;
+}
+
+.bus-line {
+  fill: none;
+  stroke: #3b494c;
+  stroke-width: 2;
+  transition: all 0.3s ease;
+}
+.bus-line.active {
+  stroke: #00e5ff;
+  filter: drop-shadow(0 0 3px rgba(0, 229, 255, 0.5));
+}
